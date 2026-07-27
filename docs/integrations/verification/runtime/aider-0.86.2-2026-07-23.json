@@ -28,8 +28,8 @@
     "clean-state": true
   },
   "media_sha256": {
-    "assets/aider/first-turn-online.png": "ce59b032558f643f0046eba33c42387879107786bbd74dd005f63a95b0ceed48",
-    "assets/aider/task-output-online.png": "da3c91b17a4edcc01580d2db64e817d16e213fb2d55ea6da4b9c09e176bab98d",
-    "assets/aider/clean-reverification-online.png": "ea0e9c96a30cd8781bc634245d1be25802b2152a9b11aca5b090bd2bd2f0b447"
+    "assets/aider/first-turn-online.jpg": "ce59b032558f643f0046eba33c42387879107786bbd74dd005f63a95b0ceed48",
+    "assets/aider/task-output-online.jpg": "da3c91b17a4edcc01580d2db64e817d16e213fb2d55ea6da4b9c09e176bab98d",
+    "assets/aider/clean-reverification-online.jpg": "ea0e9c96a30cd8781bc634245d1be25802b2152a9b11aca5b090bd2bd2f0b447"
   }
 }

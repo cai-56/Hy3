@@ -70,9 +70,9 @@ CLI 与 Web UI 属于同一产品，只计为一个 OpenCode。
 
 | 文件 | SHA-256 | 覆盖内容 |
 | --- | --- | --- |
-| `assets/opencode/first-turn-online.png` | `8289819cce33795f99d9c78618831cc36c010ee37c0a2eb1c71af88c00030435` | 真实会话、首轮标记、模型和在线响应 |
-| `assets/opencode/task-output-online.png` | `5c992eb3feb1529b7c4e3ba9da231697d5b52ba05f6a72bb5616c1634e8a0252` | 统一任务输入、任务标记、两个根因与验证步骤 |
-| `assets/opencode/version-server-1.18.3.png` | `465082987652e76400d47e5e42dad225b6f3e769166f270d2d9c83d9e73fe6f8` | OpenCode 产品身份、Web UI bundle 与服务器版本 |
-| `assets/opencode/clean-reverification-online.png` | `0492d41b88778199ed6a28c1047ff9b6bccfdf4ca65d38258e5d2da8202eb6c3` | 全新状态根中的模型、首轮标记和在线响应 |
+| `assets/opencode/first-turn-online.jpg` | `8289819cce33795f99d9c78618831cc36c010ee37c0a2eb1c71af88c00030435` | 真实会话、首轮标记、模型和在线响应 |
+| `assets/opencode/task-output-online.jpg` | `5c992eb3feb1529b7c4e3ba9da231697d5b52ba05f6a72bb5616c1634e8a0252` | 统一任务输入、任务标记、两个根因与验证步骤 |
+| `assets/opencode/version-server-1.18.3.jpg` | `465082987652e76400d47e5e42dad225b6f3e769166f270d2d9c83d9e73fe6f8` | OpenCode 产品身份、Web UI bundle 与服务器版本 |
+| `assets/opencode/clean-reverification-online.jpg` | `0492d41b88778199ed6a28c1047ff9b6bccfdf4ca65d38258e5d2da8202eb6c3` | 全新状态根中的模型、首轮标记和在线响应 |
 
 逐张检查未发现 API Key、账号、Cookie、个人路径、请求 ID、通知或私有代码。截图来自 OpenCode 官方 Web UI，没有脚本绘制或手工填充响应。

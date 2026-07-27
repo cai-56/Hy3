@@ -59,8 +59,8 @@ protocol: openai-compatible-chat-completions
 
 | 文件 | SHA-256 | 覆盖内容 |
 | --- | --- | --- |
-| `assets/aider/first-turn-online.png` | `ce59b032558f643f0046eba33c42387879107786bbd74dd005f63a95b0ceed48` | Aider 身份、版本、在线模型、首轮输入与响应 |
-| `assets/aider/task-output-online.png` | `da3c91b17a4edcc01580d2db64e817d16e213fb2d55ea6da4b9c09e176bab98d` | Aider 身份、统一任务约束、任务标记与完整诊断 |
-| `assets/aider/clean-reverification-online.png` | `ea0e9c96a30cd8781bc634245d1be25802b2152a9b11aca5b090bd2bd2f0b447` | 第二个临时仓库中的版本、模型、首轮标记和在线响应 |
+| `assets/aider/first-turn-online.jpg` | `ce59b032558f643f0046eba33c42387879107786bbd74dd005f63a95b0ceed48` | Aider 身份、版本、在线模型、首轮输入与响应 |
+| `assets/aider/task-output-online.jpg` | `da3c91b17a4edcc01580d2db64e817d16e213fb2d55ea6da4b9c09e176bab98d` | Aider 身份、统一任务约束、任务标记与完整诊断 |
+| `assets/aider/clean-reverification-online.jpg` | `ea0e9c96a30cd8781bc634245d1be25802b2152a9b11aca5b090bd2bd2f0b447` | 第二个临时仓库中的版本、模型、首轮标记和在线响应 |
 
 逐张检查未发现 API Key、账号、Cookie、个人路径、请求 ID、通知或私有代码。截图来自 Aider 自带的真实 Streamlit 界面，没有脚本绘制或手工填写响应。

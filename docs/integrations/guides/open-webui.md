@@ -62,21 +62,21 @@ HY3_FIRST_TURN_V1
 
 实际响应命中 `HY3_FIRST_TURN_V1`，并返回“我可以协助您诊断客户端配置问题。”
 
-![Open WebUI 首轮在线调用](../assets/open-webui/first-turn-online.png)
+![Open WebUI 首轮在线调用](../assets/open-webui/first-turn-online.jpg)
 
 ## 统一端到端任务
 
 完整提示词以 [`verification/task.md`](../verification/task.md) 为准。响应命中 `HY3_TASK_V1`，给出了占位符配置、两个根因和一个验证步骤。
 
-![Open WebUI 统一任务标记与在线模型](../assets/open-webui/task-marker-online.png)
+![Open WebUI 统一任务标记与在线模型](../assets/open-webui/task-marker-online.jpg)
 
-![Open WebUI 统一任务输出](../assets/open-webui/task-output-online.png)
+![Open WebUI 统一任务输出](../assets/open-webui/task-output-online.jpg)
 
 ## 版本证据
 
 “设置 → 关于”显示 `v0.10.1`。
 
-![Open WebUI 版本 0.10.1](../assets/open-webui/version-0.10.1.png)
+![Open WebUI 版本 0.10.1](../assets/open-webui/version-0.10.1.jpg)
 
 ## 干净配置复验
 
@@ -84,7 +84,7 @@ HY3_FIRST_TURN_V1
 
 本次在第二个全新 `DATA_DIR` 和独立端口上完成了复验，响应再次命中首轮标记：
 
-![Open WebUI 干净配置在线复验](../assets/open-webui/clean-reverification-online.png)
+![Open WebUI 干净配置在线复验](../assets/open-webui/clean-reverification-online.jpg)
 
 ## 实测排障
 

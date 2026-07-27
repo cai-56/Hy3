@@ -28,9 +28,9 @@
     "clean-state": true
   },
   "media_sha256": {
-    "assets/opencode/first-turn-online.png": "8289819cce33795f99d9c78618831cc36c010ee37c0a2eb1c71af88c00030435",
-    "assets/opencode/task-output-online.png": "5c992eb3feb1529b7c4e3ba9da231697d5b52ba05f6a72bb5616c1634e8a0252",
-    "assets/opencode/version-server-1.18.3.png": "465082987652e76400d47e5e42dad225b6f3e769166f270d2d9c83d9e73fe6f8",
-    "assets/opencode/clean-reverification-online.png": "0492d41b88778199ed6a28c1047ff9b6bccfdf4ca65d38258e5d2da8202eb6c3"
+    "assets/opencode/first-turn-online.jpg": "8289819cce33795f99d9c78618831cc36c010ee37c0a2eb1c71af88c00030435",
+    "assets/opencode/task-output-online.jpg": "5c992eb3feb1529b7c4e3ba9da231697d5b52ba05f6a72bb5616c1634e8a0252",
+    "assets/opencode/version-server-1.18.3.jpg": "465082987652e76400d47e5e42dad225b6f3e769166f270d2d9c83d9e73fe6f8",
+    "assets/opencode/clean-reverification-online.jpg": "0492d41b88778199ed6a28c1047ff9b6bccfdf4ca65d38258e5d2da8202eb6c3"
   }
 }

@@ -96,11 +96,11 @@ Set-Location -LiteralPath 'C:\tmp\hy3-issue2-opencode\demo'
 
 首轮提示和统一任务均逐字取自 [`verification/task.md`](../verification/task.md)。
 
-![OpenCode 首轮在线调用](../assets/opencode/first-turn-online.png)
+![OpenCode 首轮在线调用](../assets/opencode/first-turn-online.jpg)
 
 统一任务命中 `HY3_TASK_V1`，返回修正配置、两个根因和一个验证步骤：
 
-![OpenCode 统一任务在线输出](../assets/opencode/task-output-online.png)
+![OpenCode 统一任务在线输出](../assets/opencode/task-output-online.jpg)
 
 OpenCode Web UI 的 Markdown 渲染器会把响应中的 `<HY3_BASE_URL>` 和 `<HY3_API_KEY>` 当作 HTML 标签隐藏，因此截图中 `base_url` 和 `api_key` 的值显示为空。相同提示在 OpenCode CLI 中显示了完整的字面占位符；这属于显示问题，不把空值写成模型实际输出。
 
@@ -108,13 +108,13 @@ OpenCode Web UI 的 Markdown 渲染器会把响应中的 `<HY3_BASE_URL>` 和 `<
 
 设置页的服务器标签同时显示本地服务器 `v1.18.3` 和 Web UI bundle `OpenCode Desktop v1.18.2`：
 
-![OpenCode 服务器与 Web UI 版本](../assets/opencode/version-server-1.18.3.png)
+![OpenCode 服务器与 Web UI 版本](../assets/opencode/version-server-1.18.3.jpg)
 
 ## 干净配置复验
 
 第二次验证使用另一个临时 Git 仓库、全新的 D 盘 XDG 状态根、另一份无凭据配置文件和独立端口。重新添加项目并发送相同首轮提示后，响应再次命中 `HY3_FIRST_TURN_V1`。
 
-![OpenCode 干净配置在线复验](../assets/opencode/clean-reverification-online.png)
+![OpenCode 干净配置在线复验](../assets/opencode/clean-reverification-online.jpg)
 
 ## 实测排障
 

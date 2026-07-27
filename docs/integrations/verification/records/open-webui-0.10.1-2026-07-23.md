@@ -67,10 +67,10 @@ protocol: openai-compatible-chat-completions
 
 | 文件 | SHA-256 | 覆盖内容 |
 | --- | --- | --- |
-| `assets/open-webui/first-turn-online.png` | `134356510471db29cd9aac7bf73ee45624367dc39d0d60611fd5bb2ca7d99e45` | 产品界面、模型、首轮标记、真实响应 |
-| `assets/open-webui/task-marker-online.png` | `45d2c068da5cb545c97362926683902b3fa627c624ae1cf0553b832b8a3eab25` | 模型、统一任务输入、任务标记 |
-| `assets/open-webui/task-output-online.png` | `a0a0828906919ae929985a171f02ae0c2995a1a82b0580e9ffab84ea7e34d213` | 占位符配置、两个根因、验证步骤 |
-| `assets/open-webui/version-0.10.1.png` | `0eccb96b39a15cf094ba836fd9eec272367fc93038209e76ceb98c7258d23320` | 产品身份与版本 |
-| `assets/open-webui/clean-reverification-online.png` | `4f8c12d7c01551ed750f1590d22999e6f65586721bf49f6b59ea370cc5e8ad18` | 第二个全新数据目录中的模型、首轮标记与在线响应 |
+| `assets/open-webui/first-turn-online.jpg` | `134356510471db29cd9aac7bf73ee45624367dc39d0d60611fd5bb2ca7d99e45` | 产品界面、模型、首轮标记、真实响应 |
+| `assets/open-webui/task-marker-online.jpg` | `45d2c068da5cb545c97362926683902b3fa627c624ae1cf0553b832b8a3eab25` | 模型、统一任务输入、任务标记 |
+| `assets/open-webui/task-output-online.jpg` | `a0a0828906919ae929985a171f02ae0c2995a1a82b0580e9ffab84ea7e34d213` | 占位符配置、两个根因、验证步骤 |
+| `assets/open-webui/version-0.10.1.jpg` | `0eccb96b39a15cf094ba836fd9eec272367fc93038209e76ceb98c7258d23320` | 产品身份与版本 |
+| `assets/open-webui/clean-reverification-online.jpg` | `4f8c12d7c01551ed750f1590d22999e6f65586721bf49f6b59ea370cc5e8ad18` | 第二个全新数据目录中的模型、首轮标记与在线响应 |
 
 逐张检查未发现 API Key、账号、Cookie、个人路径、请求 ID、通知或私有仓库内容。图片来自真实 Open WebUI 运行界面，没有脚本绘制或手工填充响应。

@@ -29,6 +29,8 @@ Aider 的浏览器界面要求 Git 仓库。使用只含公开 README 的临时�
 New-Item -ItemType Directory -Force -Path 'C:\tmp\hy3-aider-gui-clean'
 Set-Location -LiteralPath 'C:\tmp\hy3-aider-gui-clean'
 git init
+Set-Content -LiteralPath 'README.md' -Encoding UTF8 `
+  -Value '# Hy3 Aider public demo'
 git add -- README.md
 ```
 
@@ -76,17 +78,17 @@ $env:STREAMLIT_BROWSER_GATHER_USAGE_STATS = 'false'
 
 首轮提示和统一任务均逐字取自 [`verification/task.md`](../verification/task.md)。
 
-![Aider 首轮在线调用](../assets/aider/first-turn-online.png)
+![Aider 首轮在线调用](../assets/aider/first-turn-online.jpg)
 
 统一任务响应命中 `HY3_TASK_V1`，包含占位符配置、Base URL 根因、模型根因和一个不打印 Key 的验证动作。
 
-![Aider 统一任务在线输出](../assets/aider/task-output-online.png)
+![Aider 统一任务在线输出](../assets/aider/task-output-online.jpg)
 
 ## 干净配置复验
 
 第二次验证使用另一个新建 Git 仓库、单独的 Streamlit 端口以及禁用的输入、聊天和 LLM 历史文件。再次发送相同首轮提示后，响应命中 `HY3_FIRST_TURN_V1`。
 
-![Aider 干净配置在线复验](../assets/aider/clean-reverification-online.png)
+![Aider 干净配置在线复验](../assets/aider/clean-reverification-online.jpg)
 
 ## 实测排障
 

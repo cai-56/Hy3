@@ -51,6 +51,13 @@ REQUIRED_PROOFS = {
 }
 SUPPORTED_PROTOCOLS = {"openai-compatible-chat-completions"}
 SUPPORTED_MEDIA_KINDS = {"screenshot", "gif", "video"}
+MEDIA_TYPES_BY_EXTENSION = {
+    ".gif": "GIF",
+    ".jpeg": "JPEG",
+    ".jpg": "JPEG",
+    ".mp4": "MP4",
+    ".png": "PNG",
+}
 SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 REQUIRED_RUNTIME_CLAIMS = {
     "product",
@@ -96,6 +103,18 @@ def _check_evidence_path(
         errors.append(f"{label}: not found: {relative_path}")
         return None
     return path
+
+
+def _media_type_from_header(header: bytes) -> str | None:
+    if header.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "PNG"
+    if header.startswith(b"\xff\xd8\xff"):
+        return "JPEG"
+    if header.startswith((b"GIF87a", b"GIF89a")):
+        return "GIF"
+    if len(header) >= 8 and header[4:8] == b"ftyp":
+        return "MP4"
+    return None
 
 
 def _validate_runtime_evidence(
@@ -321,7 +340,28 @@ def validate_manifest(
             )
             if media_path is None:
                 continue
-            actual_sha256 = hashlib.sha256(media_path.read_bytes()).hexdigest()
+            media_bytes = media_path.read_bytes()
+            expected_media_type = MEDIA_TYPES_BY_EXTENSION.get(
+                media_path.suffix.lower()
+            )
+            actual_media_type = _media_type_from_header(media_bytes[:12])
+            if expected_media_type is None:
+                errors.append(
+                    f"products[{index}].media[{media_index}].path: "
+                    f"unsupported media extension {media_path.suffix.lower() or '(none)'}"
+                )
+            elif actual_media_type is None:
+                errors.append(
+                    f"products[{index}].media[{media_index}].path: "
+                    "content is not recognized as PNG, JPEG, GIF, or MP4"
+                )
+            elif expected_media_type != actual_media_type:
+                errors.append(
+                    f"products[{index}].media[{media_index}].path: "
+                    f"{media_path.suffix.lower()} extension does not match "
+                    f"{actual_media_type} content"
+                )
+            actual_sha256 = hashlib.sha256(media_bytes).hexdigest()
             if media.get("sha256") != actual_sha256:
                 errors.append(
                     f"products[{index}].media[{media_index}].sha256: "

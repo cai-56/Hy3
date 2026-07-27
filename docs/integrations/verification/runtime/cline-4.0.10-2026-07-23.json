@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "product_id": "cline",
+  "product_name": "Cline",
+  "category": "ide-extension",
+  "version": "4.0.10",
+  "verified_on": "2026-07-23",
+  "actual_model": "hy3-preview",
+  "protocol": "openai-compatible-chat-completions",
+  "mode": "online",
+  "first_turn_marker": "HY3_FIRST_TURN_V1",
+  "task_marker": "HY3_TASK_V1",
+  "prompt_sha256": "3d5fd35092b72ae8b01982371bd00c4d248a80e400538527442fa472f848869d",
+  "record_path": "verification/records/cline-4.0.10-2026-07-23.md",
+  "clean_reverification_status": "passed",
+  "response_origin": "actual-online-hy3",
+  "runtime_surface": "native-ide-extension",
+  "observed_claims": {
+    "product": true,
+    "version": true,
+    "model": true,
+    "first-turn": true,
+    "task-marker": true,
+    "corrected-config": true,
+    "root-causes": true,
+    "validation-step": true,
+    "online-response": true,
+    "clean-state": true
+  },
+  "media_sha256": {
+    "assets/cline/first-turn-online.png": "b77db8b1850547cf32d95ac6c0b6550152cbde98880ccd1be87aaac47c5e5431",
+    "assets/cline/task-output-online.png": "31bc99b88118077fc643bcc7a9e65af0c83453c41a1708d9e51bd1c816dcad89",
+    "assets/cline/version-4.0.10.png": "63f0eed3b113de62a9b0d0807aa13e7be0f7fd01b8e3f7f6caced2dc0373c397",
+    "assets/cline/clean-reverification-online.png": "f7ac656682b3f06ece89a8beb15bf0dd33e59543ba69d18aa172e3f83892bafb",
+    "assets/cline/config-model-sanitized.png": "1d03cd0232715af60f4a89b842e93bd835fb22c26ec1eb59d87c0c8a4ada1700"
+  }
+}

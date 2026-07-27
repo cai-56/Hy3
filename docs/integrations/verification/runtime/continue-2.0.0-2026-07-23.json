@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "product_id": "continue",
+  "product_name": "Continue",
+  "category": "ide-extension",
+  "version": "2.0.0",
+  "verified_on": "2026-07-23",
+  "actual_model": "hy3-preview",
+  "protocol": "openai-compatible-chat-completions",
+  "mode": "online",
+  "first_turn_marker": "HY3_FIRST_TURN_V1",
+  "task_marker": "HY3_TASK_V1",
+  "prompt_sha256": "3d5fd35092b72ae8b01982371bd00c4d248a80e400538527442fa472f848869d",
+  "record_path": "verification/records/continue-2.0.0-2026-07-23.md",
+  "clean_reverification_status": "passed",
+  "response_origin": "actual-online-hy3",
+  "runtime_surface": "native-ide-extension",
+  "observed_claims": {
+    "product": true,
+    "version": true,
+    "model": true,
+    "first-turn": true,
+    "task-marker": true,
+    "corrected-config": true,
+    "root-causes": true,
+    "validation-step": true,
+    "online-response": true,
+    "clean-state": true
+  },
+  "media_sha256": {
+    "assets/continue/first-turn-online.png": "5c2d18caf854de4880441ac97394a7aad2169be8488e6d650c3fef28d8fe8acf",
+    "assets/continue/task-output-online.png": "11869569c40734307441a018e579ae150c0da2c9c8e242006c79df4e46e9e894",
+    "assets/continue/version-2.0.0.png": "cb5e9ec8044fa701fed97e06a010b14669c676710e4d8be8199dba37f6f5eeea",
+    "assets/continue/clean-reverification-online.png": "4bd09c24a91b8a664e52ad6338c00562523361208be14647a3517fa2bd27bc82",
+    "assets/continue/config-model-sanitized.png": "0b2502e49b94402c51eada88971777c981402fb118769790b981512f1b39cda4"
+  }
+}

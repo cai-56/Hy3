@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "product_id": "aider",
+  "product_name": "Aider",
+  "category": "cli",
+  "version": "0.86.2",
+  "verified_on": "2026-07-23",
+  "actual_model": "hy3-preview",
+  "protocol": "openai-compatible-chat-completions",
+  "mode": "online",
+  "first_turn_marker": "HY3_FIRST_TURN_V1",
+  "task_marker": "HY3_TASK_V1",
+  "prompt_sha256": "3d5fd35092b72ae8b01982371bd00c4d248a80e400538527442fa472f848869d",
+  "record_path": "verification/records/aider-0.86.2-2026-07-23.md",
+  "clean_reverification_status": "passed",
+  "response_origin": "actual-online-hy3",
+  "runtime_surface": "native-cli",
+  "observed_claims": {
+    "product": true,
+    "version": true,
+    "model": true,
+    "first-turn": true,
+    "task-marker": true,
+    "corrected-config": true,
+    "root-causes": true,
+    "validation-step": true,
+    "online-response": true,
+    "clean-state": true
+  },
+  "media_sha256": {
+    "assets/aider/first-turn-online.png": "ce59b032558f643f0046eba33c42387879107786bbd74dd005f63a95b0ceed48",
+    "assets/aider/task-output-online.png": "da3c91b17a4edcc01580d2db64e817d16e213fb2d55ea6da4b9c09e176bab98d",
+    "assets/aider/clean-reverification-online.png": "ea0e9c96a30cd8781bc634245d1be25802b2152a9b11aca5b090bd2bd2f0b447"
+  }
+}

@@ -37,6 +37,7 @@
 - [新闻](#新闻)
 - [模型链接](#模型链接)
 - [快速开始](#快速开始)
+- [客户端接入指南](#客户端接入指南)
 - [推理和部署](#推理和部署)
   - [vLLM](#使用-vllm-推理)
   - [SGLang](#使用-sglang-推理)
@@ -133,6 +134,13 @@ print(response.choices[0].message.content)
 > **推理模式**：复杂任务（数学、编程、推理）建议设置 `reasoning_effort="high"`，日常对话可使用默认的 `"no_think"` 直接回复。
 
 具体部署方式请参考下方[推理和部署](#推理和部署)章节。
+
+## 客户端接入指南
+
+仓库提供 CodeBuddy Code、Aider、OpenCode、Cline、Continue、Roo Code、Open WebUI 和 Flowise 的逐步接入指南。8 个客户端均使用同一份脱敏任务，通过 OpenAI-compatible Chat Completions API 完成真实在线验证，实际模型为 `hy3-preview`。
+
+版本、配置字段、干净状态复核、真实截图和机器可读证据清单见 [docs/integrations/README.md](docs/integrations/README.md)。
+配套的独立工具 [Hy3 接入体检台 v0.1.0](https://github.com/cai-56/hy3-integration-doctor/releases/tag/v0.1.0) 可离线检查配置，也可执行受控的在线探针。
 
 ## 推理和部署
 

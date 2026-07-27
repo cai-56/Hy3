@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "product_id": "flowise",
+  "product_name": "Flowise",
+  "category": "workflow-platform",
+  "version": "3.1.2",
+  "verified_on": "2026-07-23",
+  "actual_model": "hy3-preview",
+  "protocol": "openai-compatible-chat-completions",
+  "mode": "online",
+  "first_turn_marker": "HY3_FIRST_TURN_V1",
+  "task_marker": "HY3_TASK_V1",
+  "prompt_sha256": "3d5fd35092b72ae8b01982371bd00c4d248a80e400538527442fa472f848869d",
+  "record_path": "verification/records/flowise-3.1.2-2026-07-23.md",
+  "clean_reverification_status": "passed",
+  "response_origin": "actual-online-hy3",
+  "runtime_surface": "native-workflow-ui",
+  "observed_claims": {
+    "product": true,
+    "version": true,
+    "model": true,
+    "first-turn": true,
+    "task-marker": true,
+    "corrected-config": true,
+    "root-causes": true,
+    "validation-step": true,
+    "online-response": true,
+    "clean-state": true
+  },
+  "media_sha256": {
+    "assets/flowise/first-turn-online.png": "2d9f6fe14b7799b27c6d92b2f785f9b788d67b392b4fca1821698d739c341715",
+    "assets/flowise/task-output-online.png": "6476a5838e7d64d6fc4dce818340cf8c4ea5020e91699e44ea04bdff80453fed",
+    "assets/flowise/task-output-strict-retry-sanitized.png": "c7333a9b323b7c991cfe2245a80bda7a8d624314354e7fce28cfc658d74ccf05",
+    "assets/flowise/version-3.1.2.png": "ed3a849a83f00c4d1ec5b858865c1629b4e5e287308c47641298440bbdf96e31",
+    "assets/flowise/clean-reverification-online.png": "7abc24dce093dcc56ea863d33e9bf79eb62deade9eff21b67c24cba92c203e31"
+  }
+}

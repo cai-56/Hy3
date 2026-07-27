@@ -1,0 +1,676 @@
+{
+  "schema_version": "1.0",
+  "task": {
+    "id": "hy3-config-diagnosis-v1",
+    "language": "zh-CN",
+    "prompt_path": "verification/task.md",
+    "prompt_sha256": "3d5fd35092b72ae8b01982371bd00c4d248a80e400538527442fa472f848869d",
+    "first_turn_marker": "HY3_FIRST_TURN_V1",
+    "task_marker": "HY3_TASK_V1",
+    "actual_model": "hy3-preview"
+  },
+  "products": [
+    {
+      "id": "codebuddy-code",
+      "name": "CodeBuddy Code",
+      "category": "cli",
+      "version": "2.124.0",
+      "verified_on": "2026-07-23",
+      "actual_model": "hy3-preview",
+      "protocol": "openai-compatible-chat-completions",
+      "mode": "online",
+      "first_turn_marker": "HY3_FIRST_TURN_V1",
+      "task_marker": "HY3_TASK_V1",
+      "guide_path": "guides/codebuddy-code.md",
+      "record_path": "verification/records/codebuddy-code-2.124.0-2026-07-23.md",
+      "evidence_path": "verification/runtime/codebuddy-code-2.124.0-2026-07-23.json",
+      "evidence_sha256": "b729cc0f175f27ef7dc0963b796e7aba1c24f9df24562160243459fe6e7d6b81",
+      "installation": {
+        "method": "preinstalled-user-npm-package",
+        "package": "@tencent-ai/codebuddy-code@2.124.0"
+      },
+      "configuration": {
+        "endpoint": "<HY3_BASE_URL>/v1/chat/completions",
+        "api_key_env": "HY3_API_KEY",
+        "model": "hy3-preview",
+        "tools": "disabled"
+      },
+      "clean_reverification": {
+        "status": "passed",
+        "method": "second-isolated-codebuddy-config-directory"
+      },
+      "media": [
+        {
+          "path": "assets/codebuddy-code/online-verification.png",
+          "sha256": "83a4f672f7dcca3adc5a13b3dab2c84e03aaadff5aa7e8d7c1cc47972f3e33e9",
+          "kind": "screenshot",
+          "proves": [
+            "clean-configuration",
+            "first-turn",
+            "online-response",
+            "task-marker",
+            "corrected-config",
+            "root-causes",
+            "validation-step"
+          ]
+        },
+        {
+          "path": "assets/codebuddy-code/native-cli-online.png",
+          "sha256": "ed6e1bdf6d05a10e151cbe34db7c831eabb4ad8afd7b787a1a8e557d25b5f05d",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version",
+            "model",
+            "mode",
+            "online-response"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "open-webui",
+      "name": "Open WebUI",
+      "category": "web-client",
+      "version": "0.10.1",
+      "verified_on": "2026-07-23",
+      "actual_model": "hy3-preview",
+      "protocol": "openai-compatible-chat-completions",
+      "mode": "online",
+      "first_turn_marker": "HY3_FIRST_TURN_V1",
+      "task_marker": "HY3_TASK_V1",
+      "guide_path": "guides/open-webui.md",
+      "record_path": "verification/records/open-webui-0.10.1-2026-07-23.md",
+      "evidence_path": "verification/runtime/open-webui-0.10.1-2026-07-23.json",
+      "evidence_sha256": "bdf65fc9b70fc17b90e7137398c0e7403e1a0cd76e8a768ec597db5d5dbac9ae",
+      "installation": {
+        "method": "uv-tool",
+        "package": "open-webui==0.10.1",
+        "python": "3.11.15",
+        "isolated_drive": "D:"
+      },
+      "configuration": {
+        "base_url_env": "HY3_BASE_URL",
+        "api_key_env": "HY3_API_KEY",
+        "model": "hy3-preview"
+      },
+      "clean_reverification": {
+        "status": "passed",
+        "method": "fresh-data-directory-with-persistent-config-disabled"
+      },
+      "media": [
+        {
+          "path": "assets/open-webui/first-turn-online.png",
+          "sha256": "134356510471db29cd9aac7bf73ee45624367dc39d0d60611fd5bb2ca7d99e45",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "model",
+            "first-turn",
+            "online-response"
+          ]
+        },
+        {
+          "path": "assets/open-webui/task-marker-online.png",
+          "sha256": "45d2c068da5cb545c97362926683902b3fa627c624ae1cf0553b832b8a3eab25",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "model",
+            "task-marker",
+            "online-response"
+          ]
+        },
+        {
+          "path": "assets/open-webui/task-output-online.png",
+          "sha256": "a0a0828906919ae929985a171f02ae0c2995a1a82b0580e9ffab84ea7e34d213",
+          "kind": "screenshot",
+          "proves": [
+            "corrected-config",
+            "root-causes",
+            "validation-step"
+          ]
+        },
+        {
+          "path": "assets/open-webui/version-0.10.1.png",
+          "sha256": "0eccb96b39a15cf094ba836fd9eec272367fc93038209e76ceb98c7258d23320",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version"
+          ]
+        },
+        {
+          "path": "assets/open-webui/clean-reverification-online.png",
+          "sha256": "4f8c12d7c01551ed750f1590d22999e6f65586721bf49f6b59ea370cc5e8ad18",
+          "kind": "screenshot",
+          "proves": [
+            "clean-configuration",
+            "model",
+            "first-turn",
+            "online-response"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aider",
+      "name": "Aider",
+      "category": "cli",
+      "version": "0.86.2",
+      "verified_on": "2026-07-23",
+      "actual_model": "hy3-preview",
+      "protocol": "openai-compatible-chat-completions",
+      "mode": "online",
+      "first_turn_marker": "HY3_FIRST_TURN_V1",
+      "task_marker": "HY3_TASK_V1",
+      "guide_path": "guides/aider.md",
+      "record_path": "verification/records/aider-0.86.2-2026-07-23.md",
+      "evidence_path": "verification/runtime/aider-0.86.2-2026-07-23.json",
+      "evidence_sha256": "6fa9fafcd7fec348134bfaac30b674f0eddaffc799f4df84f41bbc1c3417ffa6",
+      "installation": {
+        "method": "uv-tool",
+        "package": "aider-chat==0.86.2",
+        "extra": "aider-chat[browser]==0.86.2",
+        "python": "3.12.13",
+        "isolated_drive": "D:"
+      },
+      "configuration": {
+        "base_url_env": "OPENAI_API_BASE<-HY3_BASE_URL",
+        "api_key_env": "OPENAI_API_KEY<-HY3_API_KEY",
+        "model": "openai/hy3-preview",
+        "edit_format": "ask"
+      },
+      "clean_reverification": {
+        "status": "passed",
+        "method": "second-temporary-git-repository-with-disabled-history-files"
+      },
+      "media": [
+        {
+          "path": "assets/aider/first-turn-online.png",
+          "sha256": "ce59b032558f643f0046eba33c42387879107786bbd74dd005f63a95b0ceed48",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version",
+            "model",
+            "first-turn",
+            "online-response"
+          ]
+        },
+        {
+          "path": "assets/aider/task-output-online.png",
+          "sha256": "da3c91b17a4edcc01580d2db64e817d16e213fb2d55ea6da4b9c09e176bab98d",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "task-marker",
+            "model",
+            "corrected-config",
+            "root-causes",
+            "validation-step"
+          ]
+        },
+        {
+          "path": "assets/aider/clean-reverification-online.png",
+          "sha256": "ea0e9c96a30cd8781bc634245d1be25802b2152a9b11aca5b090bd2bd2f0b447",
+          "kind": "screenshot",
+          "proves": [
+            "clean-configuration",
+            "version",
+            "model",
+            "first-turn",
+            "online-response"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode",
+      "category": "cli",
+      "version": "1.18.3",
+      "verified_on": "2026-07-23",
+      "actual_model": "hy3-preview",
+      "protocol": "openai-compatible-chat-completions",
+      "mode": "online",
+      "first_turn_marker": "HY3_FIRST_TURN_V1",
+      "task_marker": "HY3_TASK_V1",
+      "guide_path": "guides/opencode.md",
+      "record_path": "verification/records/opencode-1.18.3-2026-07-23.md",
+      "evidence_path": "verification/runtime/opencode-1.18.3-2026-07-23.json",
+      "evidence_sha256": "7c84c64f2936fb3d1bfb388b4cc6323842c931a13ffc5f200aa2190a50e3d64f",
+      "installation": {
+        "method": "npm-prefix",
+        "package": "opencode-ai@1.18.3",
+        "isolated_drive": "D:",
+        "web_ui_bundle": "OpenCode Desktop v1.18.2"
+      },
+      "configuration": {
+        "base_url_env": "HY3_BASE_URL",
+        "api_key_env": "HY3_API_KEY",
+        "provider": "@ai-sdk/openai-compatible",
+        "model": "hy3/hy3-preview",
+        "tools": "disabled"
+      },
+      "clean_reverification": {
+        "status": "passed",
+        "method": "second-temporary-git-repository-and-fresh-xdg-state-root"
+      },
+      "media": [
+        {
+          "path": "assets/opencode/first-turn-online.png",
+          "sha256": "8289819cce33795f99d9c78618831cc36c010ee37c0a2eb1c71af88c00030435",
+          "kind": "screenshot",
+          "proves": [
+            "model",
+            "first-turn",
+            "online-response"
+          ]
+        },
+        {
+          "path": "assets/opencode/task-output-online.png",
+          "sha256": "5c992eb3feb1529b7c4e3ba9da231697d5b52ba05f6a72bb5616c1634e8a0252",
+          "kind": "screenshot",
+          "proves": [
+            "model",
+            "task-marker",
+            "corrected-config",
+            "root-causes",
+            "validation-step"
+          ]
+        },
+        {
+          "path": "assets/opencode/version-server-1.18.3.png",
+          "sha256": "465082987652e76400d47e5e42dad225b6f3e769166f270d2d9c83d9e73fe6f8",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version",
+            "server-version"
+          ]
+        },
+        {
+          "path": "assets/opencode/clean-reverification-online.png",
+          "sha256": "0492d41b88778199ed6a28c1047ff9b6bccfdf4ca65d38258e5d2da8202eb6c3",
+          "kind": "screenshot",
+          "proves": [
+            "clean-configuration",
+            "model",
+            "first-turn",
+            "online-response"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cline",
+      "name": "Cline",
+      "category": "ide-extension",
+      "version": "4.0.10",
+      "verified_on": "2026-07-23",
+      "actual_model": "hy3-preview",
+      "protocol": "openai-compatible-chat-completions",
+      "mode": "online",
+      "first_turn_marker": "HY3_FIRST_TURN_V1",
+      "task_marker": "HY3_TASK_V1",
+      "guide_path": "guides/cline.md",
+      "record_path": "verification/records/cline-4.0.10-2026-07-23.md",
+      "evidence_path": "verification/runtime/cline-4.0.10-2026-07-23.json",
+      "evidence_sha256": "99157e2e07fbda4276567efdd918a2f937b4d1afa93a3f40afb1ac054f8512c3",
+      "installation": {
+        "method": "vscode-extension-directory",
+        "package": "saoudrizwan.claude-dev@4.0.10",
+        "host": "Visual Studio Code 1.130.0 official win32-x64 archive",
+        "isolated_drive": "D:"
+      },
+      "configuration": {
+        "base_url_env": "HY3_BASE_URL",
+        "api_key_env": "HY3_API_KEY",
+        "provider": "OpenAI Compatible",
+        "model": "hy3-preview",
+        "tools": "not-invoked"
+      },
+      "clean_reverification": {
+        "status": "passed",
+        "method": "second-portable-vscode-state-root-with-empty-conversation-history"
+      },
+      "media": [
+        {
+          "path": "assets/cline/first-turn-online.png",
+          "sha256": "b77db8b1850547cf32d95ac6c0b6550152cbde98880ccd1be87aaac47c5e5431",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "first-turn",
+            "online-response"
+          ]
+        },
+        {
+          "path": "assets/cline/task-output-online.png",
+          "sha256": "31bc99b88118077fc643bcc7a9e65af0c83453c41a1708d9e51bd1c816dcad89",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "task-marker",
+            "corrected-config",
+            "root-causes",
+            "validation-step"
+          ]
+        },
+        {
+          "path": "assets/cline/version-4.0.10.png",
+          "sha256": "63f0eed3b113de62a9b0d0807aa13e7be0f7fd01b8e3f7f6caced2dc0373c397",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version",
+            "running-extension"
+          ]
+        },
+        {
+          "path": "assets/cline/clean-reverification-online.png",
+          "sha256": "f7ac656682b3f06ece89a8beb15bf0dd33e59543ba69d18aa172e3f83892bafb",
+          "kind": "screenshot",
+          "proves": [
+            "clean-state",
+            "first-turn",
+            "online-response"
+          ]
+        },
+        {
+          "path": "assets/cline/config-model-sanitized.png",
+          "sha256": "1d03cd0232715af60f4a89b842e93bd835fb22c26ec1eb59d87c0c8a4ada1700",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version",
+            "model",
+            "provider",
+            "masked-key"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "continue",
+      "name": "Continue",
+      "category": "ide-extension",
+      "version": "2.0.0",
+      "verified_on": "2026-07-23",
+      "actual_model": "hy3-preview",
+      "protocol": "openai-compatible-chat-completions",
+      "mode": "online",
+      "first_turn_marker": "HY3_FIRST_TURN_V1",
+      "task_marker": "HY3_TASK_V1",
+      "guide_path": "guides/continue.md",
+      "record_path": "verification/records/continue-2.0.0-2026-07-23.md",
+      "evidence_path": "verification/runtime/continue-2.0.0-2026-07-23.json",
+      "evidence_sha256": "718001aff43ea761dd1c34d5611d081d90111f5a9fbdf0344204d1b9b51fe8e1",
+      "installation": {
+        "method": "vscode-extension-directory",
+        "package": "continue.continue@2.0.0",
+        "host": "Visual Studio Code 1.130.0 official win32-x64 archive",
+        "isolated_drive": "D:"
+      },
+      "configuration": {
+        "base_url_secret": "HY3_BASE_URL",
+        "api_key_secret": "HY3_API_KEY",
+        "provider": "openai",
+        "model": "hy3-preview",
+        "mode": "chat",
+        "use_responses_api": false,
+        "capabilities": []
+      },
+      "clean_reverification": {
+        "status": "passed",
+        "method": "second-continue-global-directory-and-portable-vscode-state-root"
+      },
+      "media": [
+        {
+          "path": "assets/continue/first-turn-online.png",
+          "sha256": "5c2d18caf854de4880441ac97394a7aad2169be8488e6d650c3fef28d8fe8acf",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "first-turn",
+            "online-response"
+          ]
+        },
+        {
+          "path": "assets/continue/task-output-online.png",
+          "sha256": "11869569c40734307441a018e579ae150c0da2c9c8e242006c79df4e46e9e894",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "task-marker",
+            "corrected-config",
+            "root-causes",
+            "validation-step"
+          ]
+        },
+        {
+          "path": "assets/continue/version-2.0.0.png",
+          "sha256": "cb5e9ec8044fa701fed97e06a010b14669c676710e4d8be8199dba37f6f5eeea",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version",
+            "running-extension"
+          ]
+        },
+        {
+          "path": "assets/continue/clean-reverification-online.png",
+          "sha256": "4bd09c24a91b8a664e52ad6338c00562523361208be14647a3517fa2bd27bc82",
+          "kind": "screenshot",
+          "proves": [
+            "clean-state",
+            "first-turn",
+            "online-response"
+          ]
+        },
+        {
+          "path": "assets/continue/config-model-sanitized.png",
+          "sha256": "0b2502e49b94402c51eada88971777c981402fb118769790b981512f1b39cda4",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "model",
+            "provider",
+            "secret-reference",
+            "disabled-unverified-capabilities"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "roo-code",
+      "name": "Roo Code",
+      "category": "ide-extension",
+      "version": "3.54.0",
+      "verified_on": "2026-07-23",
+      "actual_model": "hy3-preview",
+      "protocol": "openai-compatible-chat-completions",
+      "mode": "online",
+      "first_turn_marker": "HY3_FIRST_TURN_V1",
+      "task_marker": "HY3_TASK_V1",
+      "guide_path": "guides/roo-code.md",
+      "record_path": "verification/records/roo-code-3.54.0-2026-07-23.md",
+      "evidence_path": "verification/runtime/roo-code-3.54.0-2026-07-23.json",
+      "evidence_sha256": "a07b2cddbbed0f4c4124fb30c769b9abe15f04e9555dda7bc4fbc9707bd2a6cf",
+      "installation": {
+        "method": "vscode-extension-directory",
+        "package": "rooveterinaryinc.roo-cline@3.54.0",
+        "host": "Visual Studio Code 1.130.0 official win32-x64 archive",
+        "isolated_drive": "D:",
+        "compatibility_shim": "official-vscode-ripgrep-binary-copied-to-legacy-path"
+      },
+      "configuration": {
+        "base_url_env": "HY3_BASE_URL",
+        "api_key_env": "HY3_API_KEY",
+        "provider": "OpenAI Compatible",
+        "model": "hy3-preview",
+        "mode": "ask",
+        "auto_approve": false,
+        "tools": "not-invoked"
+      },
+      "clean_reverification": {
+        "status": "passed",
+        "method": "second-portable-vscode-state-root-with-fresh-roo-onboarding"
+      },
+      "media": [
+        {
+          "path": "assets/roo-code/first-turn-online.png",
+          "sha256": "01cec3ef4fa24911a2e14aca342cfc4e072200df6b675ac39188fe3ab1aacac4",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version",
+            "first-turn",
+            "online-response"
+          ]
+        },
+        {
+          "path": "assets/roo-code/task-output-online.png",
+          "sha256": "62516a052169d126ce0342a81ce590d191173cbcb8e900ea2d27c7a05e50264a",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "task-marker",
+            "corrected-config",
+            "root-causes",
+            "validation-step"
+          ]
+        },
+        {
+          "path": "assets/roo-code/version-3.54.0.png",
+          "sha256": "d13b39b0102e31d6b6017e291af51535155f470e4653edf5c6d316e9e969f10a",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version",
+            "extension-identifier"
+          ]
+        },
+        {
+          "path": "assets/roo-code/clean-reverification-online.png",
+          "sha256": "7d76323ac2bc02684ceb991e85fb72a626563c90fd51f5cc9ad1ca8184a98e35",
+          "kind": "screenshot",
+          "proves": [
+            "clean-state",
+            "first-turn",
+            "online-response",
+            "task-completed"
+          ]
+        },
+        {
+          "path": "assets/roo-code/config-model-sanitized.png",
+          "sha256": "406c7a12677cd8cf9128c7e6a49a147cae8c58566b21ee8489ac835833ee260a",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version",
+            "model",
+            "provider",
+            "masked-key"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flowise",
+      "name": "Flowise",
+      "category": "workflow-platform",
+      "version": "3.1.2",
+      "verified_on": "2026-07-23",
+      "actual_model": "hy3-preview",
+      "protocol": "openai-compatible-chat-completions",
+      "mode": "online",
+      "first_turn_marker": "HY3_FIRST_TURN_V1",
+      "task_marker": "HY3_TASK_V1",
+      "guide_path": "guides/flowise.md",
+      "record_path": "verification/records/flowise-3.1.2-2026-07-23.md",
+      "evidence_path": "verification/runtime/flowise-3.1.2-2026-07-23.json",
+      "evidence_sha256": "033bbd9e0b8eed7b2b4789ccec3632c9782bc9e49dcebe49feb88f60627dc930",
+      "installation": {
+        "method": "npm-prefix",
+        "package": "flowise@3.1.2",
+        "isolated_drive": "D:",
+        "runtime": "Node.js 22.23.1",
+        "compatibility_pin": "connect-sqlite3@0.9.15"
+      },
+      "configuration": {
+        "base_url_env": "HY3_BASE_URL",
+        "api_key_env": "HY3_API_KEY",
+        "credential_storage": "encrypted-local-database",
+        "model": "hy3-preview",
+        "graph": "OpenAI Custom Model + Prompt Template -> LLM Chain",
+        "tools": "not-present"
+      },
+      "clean_reverification": {
+        "status": "passed",
+        "method": "second-database-secret-storage-and-log-root-on-separate-local-port"
+      },
+      "media": [
+        {
+          "path": "assets/flowise/first-turn-online.png",
+          "sha256": "2d9f6fe14b7799b27c6d92b2f785f9b788d67b392b4fca1821698d739c341715",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "workflow",
+            "model",
+            "first-turn",
+            "online-response"
+          ]
+        },
+        {
+          "path": "assets/flowise/task-output-online.png",
+          "sha256": "6476a5838e7d64d6fc4dce818340cf8c4ea5020e91699e44ea04bdff80453fed",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "workflow",
+            "task-marker",
+            "corrected-config",
+            "root-causes",
+            "validation-step"
+          ]
+        },
+        {
+          "path": "assets/flowise/task-output-strict-retry-sanitized.png",
+          "sha256": "c7333a9b323b7c991cfe2245a80bda7a8d624314354e7fce28cfc658d74ccf05",
+          "kind": "screenshot",
+          "proves": [
+            "task-marker",
+            "corrected-config",
+            "root-causes",
+            "validation-step",
+            "strict-format-retry"
+          ]
+        },
+        {
+          "path": "assets/flowise/version-3.1.2.png",
+          "sha256": "ed3a849a83f00c4d1ec5b858865c1629b4e5e287308c47641298440bbdf96e31",
+          "kind": "screenshot",
+          "proves": [
+            "product",
+            "version"
+          ]
+        },
+        {
+          "path": "assets/flowise/clean-reverification-online.png",
+          "sha256": "7abc24dce093dcc56ea863d33e9bf79eb62deade9eff21b67c24cba92c203e31",
+          "kind": "screenshot",
+          "proves": [
+            "clean-configuration",
+            "workflow",
+            "model",
+            "first-turn",
+            "online-response"
+          ]
+        }
+      ]
+    }
+  ]
+}

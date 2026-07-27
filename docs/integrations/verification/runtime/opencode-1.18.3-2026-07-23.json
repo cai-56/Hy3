@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "product_id": "opencode",
+  "product_name": "OpenCode",
+  "category": "cli",
+  "version": "1.18.3",
+  "verified_on": "2026-07-23",
+  "actual_model": "hy3-preview",
+  "protocol": "openai-compatible-chat-completions",
+  "mode": "online",
+  "first_turn_marker": "HY3_FIRST_TURN_V1",
+  "task_marker": "HY3_TASK_V1",
+  "prompt_sha256": "3d5fd35092b72ae8b01982371bd00c4d248a80e400538527442fa472f848869d",
+  "record_path": "verification/records/opencode-1.18.3-2026-07-23.md",
+  "clean_reverification_status": "passed",
+  "response_origin": "actual-online-hy3",
+  "runtime_surface": "native-cli",
+  "observed_claims": {
+    "product": true,
+    "version": true,
+    "model": true,
+    "first-turn": true,
+    "task-marker": true,
+    "corrected-config": true,
+    "root-causes": true,
+    "validation-step": true,
+    "online-response": true,
+    "clean-state": true
+  },
+  "media_sha256": {
+    "assets/opencode/first-turn-online.png": "8289819cce33795f99d9c78618831cc36c010ee37c0a2eb1c71af88c00030435",
+    "assets/opencode/task-output-online.png": "5c992eb3feb1529b7c4e3ba9da231697d5b52ba05f6a72bb5616c1634e8a0252",
+    "assets/opencode/version-server-1.18.3.png": "465082987652e76400d47e5e42dad225b6f3e769166f270d2d9c83d9e73fe6f8",
+    "assets/opencode/clean-reverification-online.png": "0492d41b88778199ed6a28c1047ff9b6bccfdf4ca65d38258e5d2da8202eb6c3"
+  }
+}

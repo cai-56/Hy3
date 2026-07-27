@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "product_id": "roo-code",
+  "product_name": "Roo Code",
+  "category": "ide-extension",
+  "version": "3.54.0",
+  "verified_on": "2026-07-23",
+  "actual_model": "hy3-preview",
+  "protocol": "openai-compatible-chat-completions",
+  "mode": "online",
+  "first_turn_marker": "HY3_FIRST_TURN_V1",
+  "task_marker": "HY3_TASK_V1",
+  "prompt_sha256": "3d5fd35092b72ae8b01982371bd00c4d248a80e400538527442fa472f848869d",
+  "record_path": "verification/records/roo-code-3.54.0-2026-07-23.md",
+  "clean_reverification_status": "passed",
+  "response_origin": "actual-online-hy3",
+  "runtime_surface": "native-ide-extension",
+  "observed_claims": {
+    "product": true,
+    "version": true,
+    "model": true,
+    "first-turn": true,
+    "task-marker": true,
+    "corrected-config": true,
+    "root-causes": true,
+    "validation-step": true,
+    "online-response": true,
+    "clean-state": true
+  },
+  "media_sha256": {
+    "assets/roo-code/first-turn-online.png": "01cec3ef4fa24911a2e14aca342cfc4e072200df6b675ac39188fe3ab1aacac4",
+    "assets/roo-code/task-output-online.png": "62516a052169d126ce0342a81ce590d191173cbcb8e900ea2d27c7a05e50264a",
+    "assets/roo-code/version-3.54.0.png": "d13b39b0102e31d6b6017e291af51535155f470e4653edf5c6d316e9e969f10a",
+    "assets/roo-code/clean-reverification-online.png": "7d76323ac2bc02684ceb991e85fb72a626563c90fd51f5cc9ad1ca8184a98e35",
+    "assets/roo-code/config-model-sanitized.png": "406c7a12677cd8cf9128c7e6a49a147cae8c58566b21ee8489ac835833ee260a"
+  }
+}

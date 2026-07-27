@@ -37,6 +37,7 @@
 - [News](#news)
 - [Model Links](#model-links)
 - [Quickstart](#quickstart)
+- [Client Integration Guides](#client-integration-guides)
 - [Deployment](#deployment)
   - [vLLM](#vllm)
   - [SGLang](#sglang)
@@ -136,6 +137,13 @@ print(response.choices[0].message.content)
 > **Reasoning mode**: Set `reasoning_effort` to `"high"` for complex tasks (math, coding, reasoning) or `"no_think"` for direct responses.
 
 See the [Deployment](#deployment) section below for how to start the API server.
+
+## Client Integration Guides
+
+Step-by-step, evidence-backed guides are available for CodeBuddy Code, Aider, OpenCode, Cline, Continue, Roo Code, Open WebUI, and Flowise. The eight clients were verified with the same sanitized task through the OpenAI-compatible Chat Completions API, using `hy3-preview` as the actual online model.
+
+See [docs/integrations/README.md](docs/integrations/README.md) for versions, configuration fields, clean-state reverification records, screenshots, and the machine-readable evidence manifest.
+The companion [Hy3 Integration Doctor v0.1.0](https://github.com/cai-56/hy3-integration-doctor/releases/tag/v0.1.0) checks client configuration offline and can run a bounded live probe when explicitly enabled.
 
 ## Deployment
 

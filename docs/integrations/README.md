@@ -19,15 +19,15 @@
 
 ## 独立小作品
 
-[Hy3 接入体检台 v0.1.2](https://github.com/cai-56/hy3-integration-doctor/releases/tag/v0.1.2)
+[Hy3 接入体检台 v0.1.3](https://github.com/cai-56/hy3-integration-doctor/releases/tag/v0.1.3)
 用于排查客户端接入 Hy3 时的配置问题。它能离线检查 Base URL、模型 ID、鉴权位置和协议，
 也能在用户明确开启在线模式后发送最小探针，并输出脱敏的中文修复步骤。
 
-- [固定版本源码](https://github.com/cai-56/hy3-integration-doctor/tree/v0.1.2)
-- [47.43 秒在线演示](https://github.com/cai-56/hy3-integration-doctor/blob/v0.1.2/demo/online-demo-v0.1.2.gif)
-- [安装、命令和安全边界](https://github.com/cai-56/hy3-integration-doctor/blob/v0.1.2/README.md)
+- [固定版本源码](https://github.com/cai-56/hy3-integration-doctor/tree/v0.1.3)
+- [49.38 秒在线演示](https://github.com/cai-56/hy3-integration-doctor/blob/v0.1.3/demo/online-demo-v0.1.3.gif)
+- [安装、命令和安全边界](https://github.com/cai-56/hy3-integration-doctor/blob/v0.1.3/README.md)
 
-![Hy3 接入体检台真实在线演示](https://raw.githubusercontent.com/cai-56/hy3-integration-doctor/v0.1.2/demo/online-demo-v0.1.2.gif)
+![Hy3 接入体检台真实在线演示](https://raw.githubusercontent.com/cai-56/hy3-integration-doctor/v0.1.3/demo/online-demo-v0.1.3.gif)
 
 ## 通用配置
 

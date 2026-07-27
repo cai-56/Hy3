@@ -140,7 +140,7 @@ print(response.choices[0].message.content)
 仓库提供 CodeBuddy Code、Aider、OpenCode、Cline、Continue、Roo Code、Open WebUI 和 Flowise 的逐步接入指南。8 个客户端均使用同一份脱敏任务，通过 OpenAI-compatible Chat Completions API 完成真实在线验证，实际模型为 `hy3-preview`。
 
 版本、配置字段、干净状态复核、真实截图和机器可读证据清单见 [docs/integrations/README.md](docs/integrations/README.md)。
-配套的独立工具 [Hy3 接入体检台 v0.1.2](https://github.com/cai-56/hy3-integration-doctor/releases/tag/v0.1.2) 可离线检查配置，也可执行受控的在线探针。
+配套的独立工具 [Hy3 接入体检台 v0.1.3](https://github.com/cai-56/hy3-integration-doctor/releases/tag/v0.1.3) 可离线检查配置，也可执行受控的在线探针。
 
 ## 推理和部署
 

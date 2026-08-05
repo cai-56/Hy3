@@ -6,6 +6,7 @@ import asyncio
 import json
 import math
 from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any
@@ -19,9 +20,19 @@ RETRYABLE_STATUS_CODES = {429, 502, 503, 504}
 DEFAULT_TIMEOUT_SECONDS = 45.0
 MAX_RESPONSE_CHARACTERS = 100_000
 MAX_RESPONSE_BYTES = 512_000
+MAX_COMPLETION_TOKENS = 1_600
 TEMPERATURE = 0.9
 TOP_P = 1.0
 REASONING_EFFORT = "high"
+
+
+@dataclass(frozen=True, slots=True)
+class Hy3CallMetadata:
+    """Verified identity metadata retained for reproducible smoke evidence."""
+
+    http_status: int
+    requested_model: str
+    actual_model: str
 
 
 class Hy3Client:
@@ -41,6 +52,13 @@ class Hy3Client:
         self._sleep = sleep
         self._timeout_seconds = timeout_seconds
         self._max_retries = max_retries
+        self._call_metadata: list[Hy3CallMetadata] = []
+
+    @property
+    def call_metadata(self) -> tuple[Hy3CallMetadata, ...]:
+        """Return metadata for responses that passed every success check."""
+
+        return tuple(self._call_metadata)
 
     async def complete(self, messages: list[dict[str, str]]) -> str:
         """Return Hy3 assistant text without exposing response metadata or request IDs."""
@@ -49,6 +67,7 @@ class Hy3Client:
         payload: dict[str, Any] = {
             "model": self._settings.model,
             "messages": messages,
+            "max_tokens": MAX_COMPLETION_TOKENS,
             "temperature": TEMPERATURE,
             "top_p": TOP_P,
             "chat_template_kwargs": {"reasoning_effort": REASONING_EFFORT},
@@ -87,7 +106,7 @@ class Hy3Client:
                                 "Hy3 rejected the request (HTTP 400). Check HY3_MODEL and the "
                                 "documented input limits."
                             )
-                        elif not 200 <= response.status_code < 300:
+                        elif response.status_code != 200:
                             raise Hy3APIError(
                                 f"Hy3 request failed (HTTP {response.status_code}). Check "
                                 "HY3_BASE_URL and HY3_MODEL."
@@ -126,8 +145,7 @@ class Hy3Client:
                 return min(parsed, 30.0)
         return 0.5 * (2**attempt)
 
-    @staticmethod
-    async def _assistant_text(response: httpx.Response) -> str:
+    async def _assistant_text(self, response: httpx.Response) -> str:
         content_length = response.headers.get("Content-Length", "")
         if content_length.isdigit() and int(content_length) > MAX_RESPONSE_BYTES:
             raise Hy3APIError(
@@ -147,10 +165,27 @@ class Hy3Client:
             raise Hy3APIError(
                 "Hy3 returned an invalid response envelope. Retry the call or verify HY3_BASE_URL."
             ) from None
+        actual_model = data.get("model")
+        if not isinstance(actual_model, str) or not actual_model:
+            raise Hy3APIError(
+                "Hy3 response is missing a valid model identity. Verify HY3_BASE_URL and HY3_MODEL."
+            )
+        if actual_model != self._settings.model:
+            raise Hy3APIError(
+                "Hy3 response model identity does not exactly match HY3_MODEL. Check the "
+                "configured model and provider routing."
+            )
         if not isinstance(content, str) or not content.strip():
             raise Hy3APIError("Hy3 returned an empty assistant response. Retry the call.")
         if len(content) > MAX_RESPONSE_CHARACTERS:
             raise Hy3APIError(
                 f"Hy3 response exceeds the {MAX_RESPONSE_CHARACTERS}-character safety limit."
             )
+        self._call_metadata.append(
+            Hy3CallMetadata(
+                http_status=response.status_code,
+                requested_model=self._settings.model,
+                actual_model=actual_model,
+            )
+        )
         return content

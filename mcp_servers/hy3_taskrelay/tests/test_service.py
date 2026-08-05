@@ -320,6 +320,43 @@ async def test_create_checkpoint_accepts_a_single_json_code_fence() -> None:
 
 
 @pytest.mark.asyncio
+async def test_create_checkpoint_sanitizes_model_terminal_sequences_before_parsing() -> None:
+    response = (
+        "\x1b[32m"
+        + json.dumps(
+            {
+                "goal": "Continue the fix.",
+                "confirmed_facts": [{"text": "The test fails.", "evidence_ids": ["ev_log"]}],
+                "constraints": [],
+                "decisions": [],
+                "open_questions": [],
+                "next_steps": [
+                    {
+                        "action": "Patch it.",
+                        "verification": "Test passes.",
+                        "evidence_ids": ["ev_log"],
+                    }
+                ],
+            }
+        )
+        + "\x1b[0m"
+    )
+    provider = SequenceProvider([response])
+
+    checkpoint = await TaskRelayService(provider).create_checkpoint(
+        CreateCheckpointInput(
+            goal="Continue the fix.",
+            session_material="The test fails.",
+            evidence=[{"evidence_id": "ev_log", "content": "failure", "source": "log"}],
+        )
+    )
+
+    assert checkpoint.goal == "Continue the fix."
+    assert "\x1b" not in checkpoint.model_dump_json()
+    assert provider.calls == 1
+
+
+@pytest.mark.asyncio
 async def test_checkpoint_rejects_content_changed_without_a_new_id() -> None:
     provider = StaticProvider(
         {

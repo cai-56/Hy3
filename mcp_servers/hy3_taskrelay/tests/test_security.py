@@ -6,6 +6,34 @@ import pytest
 from hy3_taskrelay.security import REDACTED, redact_data, redact_text
 
 
+def test_redact_text_strips_ansi_csi_and_osc_sequences() -> None:
+    value = "ready \x1b[31mred\x1b[0m \x1b]8;;https://untrusted.example\x07link\x1b]8;;\x07 done"
+
+    assert redact_text(value) == "ready red link done"
+
+
+def test_redact_text_removes_cr_and_dangerous_c0_c1_controls() -> None:
+    value = "line1\rrewrite\x00\tok\nnext\x85end"
+
+    assert redact_text(value) == "line1rewrite\tok\nnextend"
+
+
+def test_redact_text_strips_c1_csi_and_osc_sequences() -> None:
+    value = "\x9b31mred\x9b0m \x9dhidden title\x9clink"
+
+    assert redact_text(value) == "red link"
+
+
+def test_ansi_sequences_cannot_hide_a_credential_from_redaction() -> None:
+    secret = "credential-secret-123456"
+    value = f"api_key=\x1b[31m{secret}\x1b[0m"
+
+    redacted = redact_text(value)
+
+    assert secret not in redacted
+    assert redacted == f"api_key={REDACTED}"
+
+
 @pytest.mark.parametrize(
     ("value", "secret"),
     [

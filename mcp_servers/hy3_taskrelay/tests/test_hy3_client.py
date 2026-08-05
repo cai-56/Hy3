@@ -5,7 +5,7 @@ import pytest
 
 from hy3_taskrelay.config import Settings
 from hy3_taskrelay.errors import Hy3APIError
-from hy3_taskrelay.hy3_client import Hy3Client
+from hy3_taskrelay.hy3_client import Hy3CallMetadata, Hy3Client
 
 
 def settings() -> Settings:
@@ -15,6 +15,123 @@ def settings() -> Settings:
             "HY3_BASE_URL": "https://example.test/v1",
             "HY3_MODEL": "hy3",
         }
+    )
+
+
+@pytest.mark.asyncio
+async def test_request_has_a_fixed_completion_token_budget() -> None:
+    captured_payload: dict[str, object] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured_payload.update(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                "model": "hy3",
+                "choices": [{"message": {"content": "done"}}],
+            },
+        )
+
+    await Hy3Client(settings(), transport=httpx.MockTransport(handler)).complete(
+        [{"role": "user", "content": "continue"}]
+    )
+
+    assert captured_payload["max_tokens"] == 1_600
+
+
+@pytest.mark.asyncio
+async def test_request_appends_chat_completions_to_the_normalized_v1_base() -> None:
+    requested_urls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requested_urls.append(str(request.url))
+        return httpx.Response(
+            200,
+            json={
+                "model": "hy3",
+                "choices": [{"message": {"content": "done"}}],
+            },
+        )
+
+    await Hy3Client(settings(), transport=httpx.MockTransport(handler)).complete(
+        [{"role": "user", "content": "continue"}]
+    )
+
+    assert requested_urls == ["https://example.test/v1/chat/completions"]
+
+
+@pytest.mark.asyncio
+async def test_only_exact_http_200_is_accepted() -> None:
+    transport = httpx.MockTransport(
+        lambda request: httpx.Response(
+            201,
+            json={
+                "model": "hy3",
+                "choices": [{"message": {"content": "done"}}],
+            },
+        )
+    )
+
+    with pytest.raises(Hy3APIError, match=r"HTTP 201"):
+        await Hy3Client(settings(), transport=transport).complete(
+            [{"role": "user", "content": "continue"}]
+        )
+
+
+@pytest.mark.asyncio
+async def test_success_response_requires_an_actual_model_identity() -> None:
+    transport = httpx.MockTransport(
+        lambda request: httpx.Response(
+            200,
+            json={"choices": [{"message": {"content": "done"}}]},
+        )
+    )
+
+    with pytest.raises(Hy3APIError, match="model identity"):
+        await Hy3Client(settings(), transport=transport).complete(
+            [{"role": "user", "content": "continue"}]
+        )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("actual_model", ["different-model", "HY3"])
+async def test_actual_model_must_exactly_match_the_requested_model(actual_model: str) -> None:
+    transport = httpx.MockTransport(
+        lambda request: httpx.Response(
+            200,
+            json={
+                "model": actual_model,
+                "choices": [{"message": {"content": "done"}}],
+            },
+        )
+    )
+
+    with pytest.raises(Hy3APIError, match="exactly match HY3_MODEL") as caught:
+        await Hy3Client(settings(), transport=transport).complete(
+            [{"role": "user", "content": "continue"}]
+        )
+
+    assert "different-model" not in str(caught.value)
+
+
+@pytest.mark.asyncio
+async def test_verified_call_metadata_records_http_and_model_identity() -> None:
+    transport = httpx.MockTransport(
+        lambda request: httpx.Response(
+            200,
+            json={
+                "model": "hy3",
+                "choices": [{"message": {"content": "done"}}],
+            },
+        )
+    )
+    client = Hy3Client(settings(), transport=transport)
+
+    result = await client.complete([{"role": "user", "content": "continue"}])
+
+    assert result == "done"
+    assert client.call_metadata == (
+        Hy3CallMetadata(http_status=200, requested_model="hy3", actual_model="hy3"),
     )
 
 
@@ -34,7 +151,10 @@ async def test_429_retries_once_after_retry_after_delay() -> None:
             )
         return httpx.Response(
             200,
-            json={"choices": [{"message": {"content": json.dumps({"ok": True})}}]},
+            json={
+                "model": "hy3",
+                "choices": [{"message": {"content": json.dumps({"ok": True})}}],
+            },
         )
 
     async def record_sleep(delay: float) -> None:
@@ -66,7 +186,10 @@ async def test_retry_after_http_date_is_honored_with_the_safety_cap() -> None:
                 429,
                 headers={"Retry-After": "Sun, 01 Jan 2040 00:00:00 GMT"},
             )
-        return httpx.Response(200, json={"choices": [{"message": {"content": "done"}}]})
+        return httpx.Response(
+            200,
+            json={"model": "hy3", "choices": [{"message": {"content": "done"}}]},
+        )
 
     async def record_sleep(delay: float) -> None:
         delays.append(delay)
@@ -89,7 +212,10 @@ async def test_503_is_retried_with_a_finite_backoff() -> None:
         calls += 1
         if calls < 3:
             return httpx.Response(503, json={"error": {"message": "temporary"}})
-        return httpx.Response(200, json={"choices": [{"message": {"content": "done"}}]})
+        return httpx.Response(
+            200,
+            json={"model": "hy3", "choices": [{"message": {"content": "done"}}]},
+        )
 
     async def record_sleep(delay: float) -> None:
         delays.append(delay)

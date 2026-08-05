@@ -1,4 +1,4 @@
-"""Run stable, offline TaskRelay evaluations over public synthetic fixtures."""
+"""Run stable offline contract assertions over public synthetic fixtures."""
 
 from __future__ import annotations
 
@@ -90,7 +90,7 @@ async def _artifacts(fixture: dict[str, Any]) -> dict[str, Any]:
 
 
 async def run_evaluations(project_root: Path) -> list[dict[str, Any]]:
-    """Return one pass/fail record per independent evaluation case."""
+    """Return one pass/fail record per independent contract assertion."""
 
     fixtures = {}
     for path in sorted((project_root / "examples" / "fixtures").glob("*.json")):
@@ -120,7 +120,12 @@ def main() -> None:
     arguments = parser.parse_args()
     results = asyncio.run(run_evaluations(arguments.project_root))
     failed = [result for result in results if not result["passed"]]
-    print(json.dumps({"total": len(results), "failed": failed}, ensure_ascii=False))
+    print(
+        json.dumps(
+            {"contract_assertions": len(results), "failed": failed},
+            ensure_ascii=False,
+        )
+    )
     raise SystemExit(1 if failed else 0)
 
 

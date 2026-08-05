@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from typing import Annotated, Any, cast
 
 from mcp.server.fastmcp import FastMCP
@@ -299,4 +300,8 @@ def create_server(service: TaskRelayService | None = None) -> FastMCP:
 def main() -> None:
     """Run the local stdio MCP server."""
 
+    if sys.argv[1:] == ["--selfcheck"]:
+        from hy3_taskrelay.selfcheck import selfcheck_main
+
+        raise SystemExit(selfcheck_main())
     create_server().run(transport="stdio")

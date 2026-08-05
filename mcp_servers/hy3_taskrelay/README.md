@@ -52,13 +52,13 @@ store or local shell environment; do not commit it, paste it into an issue, or s
 
 ```powershell
 $env:HY3_API_KEY = "<set-locally>"
-$env:HY3_BASE_URL = "https://tokenhub.tencentmaas.com/v1"
+$env:HY3_BASE_URL = "<provider-base-url-ending-in-/v1>"
 $env:HY3_MODEL = "hy3"
 ```
 
 ```bash
 export HY3_API_KEY='<set-locally>'
-export HY3_BASE_URL='https://tokenhub.tencentmaas.com/v1'
+export HY3_BASE_URL='<provider-base-url-ending-in-/v1>'
 export HY3_MODEL='hy3'
 ```
 
@@ -78,7 +78,7 @@ names in its [official MCP guide](https://www.codebuddy.ai/docs/cli/mcp).
 The equivalent persistent registration command is:
 
 ```bash
-codebuddy mcp add-json --scope project hy3-taskrelay '{"type":"stdio","command":"uv","args":["run","--directory","mcp_servers/hy3_taskrelay","hy3-taskrelay-mcp"],"env":{"HY3_API_KEY":"${HY3_API_KEY}","HY3_BASE_URL":"${HY3_BASE_URL:-https://tokenhub.tencentmaas.com/v1}","HY3_MODEL":"${HY3_MODEL:-hy3}"}}'
+codebuddy mcp add-json --scope project hy3-taskrelay '{"type":"stdio","command":"uv","args":["run","--directory","mcp_servers/hy3_taskrelay","hy3-taskrelay-mcp"],"env":{"HY3_API_KEY":"${HY3_API_KEY}","HY3_BASE_URL":"${HY3_BASE_URL}","HY3_MODEL":"${HY3_MODEL}"}}'
 ```
 
 Approve a project MCP server interactively on first connection. For a reproducible headless call,

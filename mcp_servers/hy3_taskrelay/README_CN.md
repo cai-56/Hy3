@@ -51,13 +51,13 @@ python -m hy3_taskrelay
 
 ```powershell
 $env:HY3_API_KEY = "<仅在本机设置>"
-$env:HY3_BASE_URL = "https://tokenhub.tencentmaas.com/v1"
+$env:HY3_BASE_URL = "<以-/v1-结尾的服务地址>"
 $env:HY3_MODEL = "hy3"
 ```
 
 ```bash
 export HY3_API_KEY='<仅在本机设置>'
-export HY3_BASE_URL='https://tokenhub.tencentmaas.com/v1'
+export HY3_BASE_URL='<以-/v1-结尾的服务地址>'
 export HY3_MODEL='hy3'
 ```
 
@@ -77,7 +77,7 @@ headless 审批配置和 tool 权限名称。
 等价的持久注册命令：
 
 ```bash
-codebuddy mcp add-json --scope project hy3-taskrelay '{"type":"stdio","command":"uv","args":["run","--directory","mcp_servers/hy3_taskrelay","hy3-taskrelay-mcp"],"env":{"HY3_API_KEY":"${HY3_API_KEY}","HY3_BASE_URL":"${HY3_BASE_URL:-https://tokenhub.tencentmaas.com/v1}","HY3_MODEL":"${HY3_MODEL:-hy3}"}}'
+codebuddy mcp add-json --scope project hy3-taskrelay '{"type":"stdio","command":"uv","args":["run","--directory","mcp_servers/hy3_taskrelay","hy3-taskrelay-mcp"],"env":{"HY3_API_KEY":"${HY3_API_KEY}","HY3_BASE_URL":"${HY3_BASE_URL}","HY3_MODEL":"${HY3_MODEL}"}}'
 ```
 
 交互模式首次连接时先检查并批准项目 MCP Server。headless 模式无法弹出审批 UI，必须

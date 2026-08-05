@@ -1,0 +1,75 @@
+name: Hy3 TaskRelay
+
+on:
+  push:
+    branches:
+      - rhinobird/issue-3-mcp-server
+    paths:
+      - "mcp_servers/hy3_taskrelay/**"
+      - ".github/workflows/hy3-taskrelay.yml"
+  pull_request:
+    branches:
+      - rhinobird2026
+    paths:
+      - "mcp_servers/hy3_taskrelay/**"
+      - ".github/workflows/hy3-taskrelay.yml"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+    working-directory: mcp_servers/hy3_taskrelay
+
+jobs:
+  quality:
+    name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.14"]
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: mcp_servers/hy3_taskrelay/uv.lock
+
+      - name: Install locked dependencies
+        run: uv sync --frozen --extra dev
+
+      - name: Check formatting
+        run: uv run ruff format --check .
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Type-check
+        run: uv run mypy
+
+      - name: Run tests
+        run: uv run pytest
+
+      - name: Run offline contract assertions
+        run: uv run python evals/run.py
+
+      - name: Run stdio self-check
+        run: uv run hy3-taskrelay --selfcheck
+
+      - name: Build distributions
+        run: uv run python -m build
+
+      - name: Verify distributions
+        run: uv run twine check dist/*

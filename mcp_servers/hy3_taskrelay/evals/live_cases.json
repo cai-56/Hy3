@@ -1,0 +1,248 @@
+{
+  "schema_version": "1.0",
+  "synthetic": true,
+  "description": "Frozen public synthetic tasks for repeated real-Hy3 TaskRelay evaluation.",
+  "minimum_repeats": 2,
+  "tasks": [
+    {
+      "task_id": "cart_empty_total",
+      "create_input": {
+        "goal": "Fix the empty-cart total regression without changing the public API.",
+        "session_material": "The interrupted session reproduced the failure and traced the None return to the empty-cart branch.",
+        "constraints": ["Do not change the public calculate_total signature."],
+        "decisions": ["Write the regression test before changing implementation."],
+        "evidence": [
+          {"evidence_id": "ev_cart_issue", "content": "Empty carts must return Decimal('0.00').", "source": "synthetic issue"},
+          {"evidence_id": "ev_cart_test", "content": "test_empty_cart_total expected Decimal('0.00') but received None.", "source": "synthetic test log"},
+          {"evidence_id": "ev_cart_trace", "content": "calculate_total returns without a value when cart.items is empty.", "source": "synthetic trace"}
+        ]
+      },
+      "additional_evidence": [
+        {"evidence_id": "ev_cart_api", "content": "The compatibility test confirms that the public signature is unchanged.", "source": "synthetic compatibility test"}
+      ],
+      "continuation_context": "A clean continuation session can edit tests and implementation.",
+      "expectations": {
+        "constraint_phrases": ["Do not change the public calculate_total signature."],
+        "facts": [{"any_keywords": ["empty-cart", "empty cart", "None"], "evidence_ids": ["ev_cart_test", "ev_cart_trace"]}],
+        "contradiction": {"expected": false, "evidence_ids": []},
+        "next_steps": [{"any_keywords": ["regression test", "test_empty_cart_total"]}]
+      }
+    },
+    {
+      "task_id": "export_format_change",
+      "create_input": {
+        "goal": "Finish the streaming report exporter under the latest product contract.",
+        "session_material": "The interrupted session implemented CSV output and CSV-only tests from the original contract.",
+        "constraints": ["Do not add a third-party serialization dependency."],
+        "decisions": ["Keep row generation streaming to bound memory use."],
+        "evidence": [
+          {"evidence_id": "ev_export_old", "content": "Version 1 requires CSV export only.", "source": "synthetic original requirement"},
+          {"evidence_id": "ev_export_design", "content": "The accepted design streams rows through an iterator.", "source": "synthetic design record"},
+          {"evidence_id": "ev_export_test", "content": "The existing tests verify text/csv output only.", "source": "synthetic test summary"}
+        ]
+      },
+      "additional_evidence": [
+        {"evidence_id": "ev_export_new", "content": "Version 2 requires CSV and newline-delimited JSON selected by an explicit format argument.", "source": "synthetic updated requirement"}
+      ],
+      "continuation_context": "Update tests before completing the exporter.",
+      "expectations": {
+        "constraint_phrases": ["Do not add a third-party serialization dependency."],
+        "facts": [{"any_keywords": ["CSV only", "CSV-only"], "evidence_ids": ["ev_export_old", "ev_export_test"]}],
+        "contradiction": {"expected": true, "evidence_ids": ["ev_export_old", "ev_export_new"]},
+        "next_steps": [{"any_keywords": ["newline-delimited JSON", "JSON format"]}]
+      }
+    },
+    {
+      "task_id": "password_hash_migration",
+      "create_input": {
+        "goal": "Complete the password-hash migration safely.",
+        "session_material": "The branch currently creates SHA-256 password hashes and has a fixture for that representation.",
+        "constraints": ["Existing users must remain able to sign in during migration."],
+        "decisions": ["Use opportunistic rehashing after successful authentication."],
+        "evidence": [
+          {"evidence_id": "ev_hash_old", "content": "The original design selected unsalted SHA-256 hashes.", "source": "synthetic old design"},
+          {"evidence_id": "ev_hash_code", "content": "create_password_hash currently emits SHA-256 digests.", "source": "synthetic code note"},
+          {"evidence_id": "ev_hash_login", "content": "The login flow can replace a stored hash after verification.", "source": "synthetic trace"}
+        ]
+      },
+      "additional_evidence": [
+        {"evidence_id": "ev_hash_new", "content": "The approved security requirement mandates Argon2id for every newly stored password hash.", "source": "synthetic security requirement"}
+      ],
+      "continuation_context": "The migration must preserve old-login compatibility while changing new writes.",
+      "expectations": {
+        "constraint_phrases": ["Existing users must remain able to sign in during migration."],
+        "facts": [{"any_keywords": ["SHA-256", "SHA256"], "evidence_ids": ["ev_hash_old", "ev_hash_code"]}],
+        "contradiction": {"expected": true, "evidence_ids": ["ev_hash_old", "ev_hash_new"]},
+        "next_steps": [{"any_keywords": ["Argon2id", "opportunistic rehash"]}]
+      }
+    },
+    {
+      "task_id": "pagination_contract",
+      "create_input": {
+        "goal": "Finish the activity-feed pagination endpoint.",
+        "session_material": "The endpoint uses page numbers and assumes a maximum of one hundred records per page.",
+        "constraints": ["Keep response ordering deterministic."],
+        "decisions": ["Sort by created_at and then stable record ID."],
+        "evidence": [
+          {"evidence_id": "ev_page_old", "content": "The original API contract exposes integer page and page_size parameters.", "source": "synthetic old contract"},
+          {"evidence_id": "ev_page_code", "content": "The handler applies offset and limit using the supplied page number.", "source": "synthetic implementation note"},
+          {"evidence_id": "ev_page_order", "content": "Tests require descending created_at order with ID as the tie breaker.", "source": "synthetic test note"}
+        ]
+      },
+      "additional_evidence": [
+        {"evidence_id": "ev_page_new", "content": "The accepted API revision replaces page numbers with an opaque next_cursor token.", "source": "synthetic revised contract"}
+      ],
+      "continuation_context": "The continuation starts before public release, so contract tests may change.",
+      "expectations": {
+        "constraint_phrases": ["Keep response ordering deterministic."],
+        "facts": [{"any_keywords": ["page number", "offset"], "evidence_ids": ["ev_page_old", "ev_page_code"]}],
+        "contradiction": {"expected": true, "evidence_ids": ["ev_page_old", "ev_page_new"]},
+        "next_steps": [{"any_keywords": ["cursor", "next_cursor"]}]
+      }
+    },
+    {
+      "task_id": "cache_ttl_guard",
+      "create_input": {
+        "goal": "Complete the product-cache TTL fix.",
+        "session_material": "The cache currently retains product entries for sixty minutes and the failing test expects five minutes.",
+        "constraints": ["Do not invalidate unrelated cache namespaces."],
+        "decisions": ["Change only the product cache policy."],
+        "evidence": [
+          {"evidence_id": "ev_cache_req", "content": "Product cache entries must expire after five minutes.", "source": "synthetic requirement"},
+          {"evidence_id": "ev_cache_test", "content": "test_product_cache_ttl observes a configured TTL of sixty minutes.", "source": "synthetic test log"},
+          {"evidence_id": "ev_cache_scope", "content": "Session and catalog caches have separate named policies.", "source": "synthetic configuration note"}
+        ]
+      },
+      "additional_evidence": [
+        {"evidence_id": "ev_cache_confirm", "content": "Product management reconfirmed the five-minute product-cache TTL.", "source": "synthetic confirmation"}
+      ],
+      "continuation_context": "The failing test is isolated and reproducible.",
+      "expectations": {
+        "constraint_phrases": ["Do not invalidate unrelated cache namespaces."],
+        "facts": [{"any_keywords": ["sixty minutes", "60 minutes"], "evidence_ids": ["ev_cache_test"]}],
+        "contradiction": {"expected": false, "evidence_ids": []},
+        "next_steps": [{"any_keywords": ["five-minute", "five minutes", "TTL"]}]
+      }
+    },
+    {
+      "task_id": "keyboard_accessibility",
+      "create_input": {
+        "goal": "Finish the modal-dialog interaction fix.",
+        "session_material": "The interrupted patch closes the modal by mouse and restores its visual layout.",
+        "constraints": ["Preserve the existing visual layout."],
+        "decisions": ["Keep the current dialog component."],
+        "evidence": [
+          {"evidence_id": "ev_a11y_bug", "content": "The close button works with pointer clicks but not the Escape key.", "source": "synthetic bug report"},
+          {"evidence_id": "ev_a11y_code", "content": "The dialog has no keyboard event handler or focus restoration.", "source": "synthetic code note"},
+          {"evidence_id": "ev_a11y_visual", "content": "The approved screenshot matches the current spacing and colors.", "source": "synthetic visual review"}
+        ]
+      },
+      "additional_evidence": [
+        {"evidence_id": "ev_a11y_req", "content": "Acceptance requires Escape to close and focus to return to the trigger.", "source": "synthetic accessibility requirement"}
+      ],
+      "continuation_context": "Add interaction coverage without redesigning the dialog.",
+      "expectations": {
+        "constraint_phrases": ["Preserve the existing visual layout."],
+        "facts": [{"any_keywords": ["Escape", "keyboard"], "evidence_ids": ["ev_a11y_bug", "ev_a11y_code"]}],
+        "contradiction": {"expected": false, "evidence_ids": []},
+        "next_steps": [{"any_keywords": ["focus", "Escape"]}]
+      }
+    },
+    {
+      "task_id": "zero_downtime_migration",
+      "create_input": {
+        "goal": "Complete the customer-name database migration.",
+        "session_material": "The draft migration renames full_name to display_name in one transaction and drops the old column.",
+        "constraints": ["No customer records may be lost."],
+        "decisions": ["Run the change through the normal migration framework."],
+        "evidence": [
+          {"evidence_id": "ev_db_old", "content": "The original plan renames full_name and immediately drops the old column.", "source": "synthetic migration plan"},
+          {"evidence_id": "ev_db_code", "content": "The draft migration contains a destructive DROP COLUMN operation.", "source": "synthetic migration diff"},
+          {"evidence_id": "ev_db_usage", "content": "The currently deployed application still reads full_name.", "source": "synthetic production inventory"}
+        ]
+      },
+      "additional_evidence": [
+        {"evidence_id": "ev_db_new", "content": "Operations approved only an expand-and-contract migration with both columns available during rollout.", "source": "synthetic operations decision"}
+      ],
+      "continuation_context": "Deployment spans old and new application versions.",
+      "expectations": {
+        "constraint_phrases": ["No customer records may be lost."],
+        "facts": [{"any_keywords": ["DROP COLUMN", "drops the old column"], "evidence_ids": ["ev_db_old", "ev_db_code"]}],
+        "contradiction": {"expected": true, "evidence_ids": ["ev_db_old", "ev_db_new"]},
+        "next_steps": [{"any_keywords": ["expand-and-contract", "backfill", "dual"]}]
+      }
+    },
+    {
+      "task_id": "timezone_boundary",
+      "create_input": {
+        "goal": "Fix the daily-summary date-boundary bug.",
+        "session_material": "A reproducible test shows that records near midnight are assigned to the wrong local day.",
+        "constraints": ["Store timestamps in UTC."],
+        "decisions": ["Convert to the account timezone only at the reporting boundary."],
+        "evidence": [
+          {"evidence_id": "ev_tz_test", "content": "test_daily_summary_boundary fails for 23:30 UTC in an Asia/Tokyo account.", "source": "synthetic test log"},
+          {"evidence_id": "ev_tz_trace", "content": "The query truncates the UTC timestamp before applying the account timezone.", "source": "synthetic trace"},
+          {"evidence_id": "ev_tz_policy", "content": "Persistent timestamps use UTC across the service.", "source": "synthetic architecture rule"}
+        ]
+      },
+      "additional_evidence": [
+        {"evidence_id": "ev_tz_confirm", "content": "Reporting owners confirmed that day boundaries follow the account timezone.", "source": "synthetic product confirmation"}
+      ],
+      "continuation_context": "The test can be extended with both sides of midnight.",
+      "expectations": {
+        "constraint_phrases": ["Store timestamps in UTC."],
+        "facts": [{"any_keywords": ["truncates", "account timezone"], "evidence_ids": ["ev_tz_trace"]}],
+        "contradiction": {"expected": false, "evidence_ids": []},
+        "next_steps": [{"any_keywords": ["timezone", "midnight", "boundary"]}]
+      }
+    },
+    {
+      "task_id": "privacy_log_change",
+      "create_input": {
+        "goal": "Complete request logging for the account lookup endpoint.",
+        "session_material": "The current patch logs the full account email to make lookup failures searchable.",
+        "constraints": ["Keep enough context to correlate failures across services."],
+        "decisions": ["Use structured JSON logs."],
+        "evidence": [
+          {"evidence_id": "ev_log_old", "content": "The original observability note asks for the complete account email in every failure log.", "source": "synthetic old note"},
+          {"evidence_id": "ev_log_code", "content": "The patch emits account_email without redaction.", "source": "synthetic code review"},
+          {"evidence_id": "ev_log_trace", "content": "A generated correlation ID already crosses the involved services.", "source": "synthetic trace design"}
+        ]
+      },
+      "additional_evidence": [
+        {"evidence_id": "ev_log_new", "content": "The privacy review prohibits email addresses in logs and requires correlation IDs instead.", "source": "synthetic privacy decision"}
+      ],
+      "continuation_context": "The log schema may change before release.",
+      "expectations": {
+        "constraint_phrases": ["Keep enough context to correlate failures across services."],
+        "facts": [{"any_keywords": ["email", "without redaction"], "evidence_ids": ["ev_log_old", "ev_log_code"]}],
+        "contradiction": {"expected": true, "evidence_ids": ["ev_log_old", "ev_log_new"]},
+        "next_steps": [{"any_keywords": ["correlation ID", "redact", "privacy"]}]
+      }
+    },
+    {
+      "task_id": "retry_after_policy",
+      "create_input": {
+        "goal": "Finish bounded retries for the upstream inventory client.",
+        "session_material": "The client retries transient gateway failures twice with exponential backoff but does not handle Retry-After.",
+        "constraints": ["Never retry authentication or validation failures."],
+        "decisions": ["Allow at most two retries after the first request."],
+        "evidence": [
+          {"evidence_id": "ev_retry_code", "content": "The client retries HTTP 502 and 503 twice with exponential backoff.", "source": "synthetic code note"},
+          {"evidence_id": "ev_retry_test", "content": "Tests cover bounded 503 retries and immediate 401 failure.", "source": "synthetic test summary"},
+          {"evidence_id": "ev_retry_rule", "content": "Authentication and validation failures are non-retryable.", "source": "synthetic reliability rule"}
+        ]
+      },
+      "additional_evidence": [
+        {"evidence_id": "ev_retry_new", "content": "The provider documents Retry-After for HTTP 429 and requires clients to cap the delay at thirty seconds.", "source": "synthetic provider note"}
+      ],
+      "continuation_context": "Add deterministic retry tests without real sleeping.",
+      "expectations": {
+        "constraint_phrases": ["Never retry authentication or validation failures."],
+        "facts": [{"any_keywords": ["502", "503", "exponential backoff"], "evidence_ids": ["ev_retry_code"]}],
+        "contradiction": {"expected": false, "evidence_ids": []},
+        "next_steps": [{"any_keywords": ["Retry-After", "429", "thirty seconds"]}]
+      }
+    }
+  ]
+}

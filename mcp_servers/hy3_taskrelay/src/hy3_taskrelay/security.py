@@ -53,6 +53,65 @@ _WHOLE_PATTERNS = (
 )
 
 
+def _consume_csi(value: str, index: int) -> int:
+    while index < len(value):
+        codepoint = ord(value[index])
+        index += 1
+        if 0x40 <= codepoint <= 0x7E:
+            break
+    return index
+
+
+def _consume_osc(value: str, index: int) -> int:
+    while index < len(value):
+        if value[index] in {"\x07", "\x9c"}:
+            return index + 1
+        if value[index] == "\x1b" and index + 1 < len(value) and value[index + 1] == "\\":
+            return index + 2
+        index += 1
+    return index
+
+
+def _strip_terminal_controls(value: str) -> str:
+    """Remove terminal escape sequences and unsafe C0/C1 controls in one bounded pass."""
+
+    output: list[str] = []
+    index = 0
+    while index < len(value):
+        character = value[index]
+        codepoint = ord(character)
+        if character == "\x1b":
+            index += 1
+            if index >= len(value):
+                break
+            if value[index] == "[":
+                index = _consume_csi(value, index + 1)
+                continue
+            if value[index] == "]":
+                index = _consume_osc(value, index + 1)
+                continue
+            while index < len(value) and 0x20 <= ord(value[index]) <= 0x2F:
+                index += 1
+            if index < len(value) and 0x30 <= ord(value[index]) <= 0x7E:
+                index += 1
+            continue
+        if character == "\x9b":
+            index = _consume_csi(value, index + 1)
+            continue
+        if character == "\x9d":
+            index = _consume_osc(value, index + 1)
+            continue
+        if codepoint < 32 and character not in {"\n", "\t"}:
+            index += 1
+            continue
+        if 127 <= codepoint <= 159:
+            index += 1
+            continue
+        output.append(character)
+        index += 1
+    return "".join(output)
+
+
 def _redact_prefixed(match: re.Match[str]) -> str:
     value = match.group(2)
     if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
@@ -63,7 +122,7 @@ def _redact_prefixed(match: re.Match[str]) -> str:
 def redact_text(value: str, secret_values: Iterable[str] = ()) -> str:
     """Replace common credentials and explicitly supplied secrets without logging them."""
 
-    redacted = value
+    redacted = _strip_terminal_controls(value)
     for secret in secret_values:
         if len(secret) >= 4:
             redacted = redacted.replace(secret, REDACTED)

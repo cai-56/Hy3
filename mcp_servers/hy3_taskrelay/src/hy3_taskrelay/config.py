@@ -18,7 +18,7 @@ _UNEXPANDED_VARIABLE = re.compile(r"^\$\{(?:env:)?([A-Z][A-Z0-9_]*)(?::-[^}]*)?\
 
 
 def _contains_control_characters(value: str) -> bool:
-    return any(ord(character) < 32 or ord(character) == 127 for character in value)
+    return any(ord(character) < 32 or 127 <= ord(character) <= 159 for character in value)
 
 
 def _is_printable_ascii_token(value: str) -> bool:
@@ -68,6 +68,9 @@ class Settings(BaseModel):
                 "HY3_BASE_URL must include a host and must not contain credentials, query, "
                 "or fragment."
             )
+        if not parsed.path.rstrip("/").endswith("/v1"):
+            raise ConfigError("HY3_BASE_URL path must end in /v1.")
+        base_url = base_url.rstrip("/")
         model = values.get("HY3_MODEL", "").strip()
         model_placeholder = _UNEXPANDED_VARIABLE.fullmatch(model)
         if not model or (model_placeholder and model_placeholder.group(1) == "HY3_MODEL"):

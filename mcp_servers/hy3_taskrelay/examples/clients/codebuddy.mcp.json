@@ -11,7 +11,7 @@
       ],
       "env": {
         "HY3_API_KEY": "${HY3_API_KEY}",
-        "HY3_BASE_URL": "${HY3_BASE_URL:-https://tokenhub.tencentmaas.com/v1}",
+        "HY3_BASE_URL": "${HY3_BASE_URL}",
         "HY3_MODEL": "${HY3_MODEL:-hy3}"
       },
       "description": "Stateless, evidence-grounded handoff for interrupted long tasks"

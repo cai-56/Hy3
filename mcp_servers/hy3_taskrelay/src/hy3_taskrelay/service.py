@@ -196,7 +196,8 @@ class TaskRelayService:
         model_type: type[StructuredModel],
         allowed_evidence_ids: set[str],
     ) -> StructuredModel:
-        model = model_type.model_validate(json.loads(_json_text(response)))
+        sanitized_response = redact_text(response, self._secret_values)
+        model = model_type.model_validate(json.loads(_json_text(sanitized_response)))
         missing = _referenced_evidence_ids(model.model_dump(mode="json")) - allowed_evidence_ids
         if missing:
             raise _EvidenceReferenceError(missing)

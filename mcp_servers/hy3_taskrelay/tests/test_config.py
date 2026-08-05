@@ -19,6 +19,29 @@ def test_base_url_must_be_https() -> None:
         )
 
 
+def test_base_url_requires_a_literal_v1_suffix() -> None:
+    with pytest.raises(ConfigError, match=r"HY3_BASE_URL.*end in /v1"):
+        Settings.from_env(
+            {
+                "HY3_API_KEY": "test-key",
+                "HY3_BASE_URL": "https://example.test/openai",
+                "HY3_MODEL": "hy3",
+            }
+        )
+
+
+def test_base_url_normalizes_one_or_more_trailing_slashes_after_v1() -> None:
+    loaded = Settings.from_env(
+        {
+            "HY3_API_KEY": "test-key",
+            "HY3_BASE_URL": "https://example.test/prefix/v1///",
+            "HY3_MODEL": "hy3",
+        }
+    )
+
+    assert loaded.base_url == "https://example.test/prefix/v1"
+
+
 def test_model_must_not_be_blank() -> None:
     with pytest.raises(ConfigError, match="HY3_MODEL"):
         Settings.from_env(
@@ -80,6 +103,7 @@ def test_api_key_must_be_a_printable_ascii_header_token(api_key: str) -> None:
     [
         ("HY3_API_KEY", "key\r\nInjected: value", "printable ASCII"),
         ("HY3_MODEL", "hy3\nInjected", "control bytes"),
+        ("HY3_MODEL", "hy3\u009b31m", "control bytes"),
     ],
 )
 def test_header_bound_settings_reject_control_characters(

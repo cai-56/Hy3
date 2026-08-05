@@ -19,6 +19,7 @@ dependencies = [
 [project.scripts]
 replaylab-eval = "replaylab.cli_evals:main"
 replaylab-live-fixtures = "replaylab.cli_live_fixtures:main"
+replaylab-start = "replaylab.launcher:main"
 
 [dependency-groups]
 dev = [

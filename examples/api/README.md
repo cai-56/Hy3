@@ -8,7 +8,7 @@
 
 ## 先运行基础对话
 
-以下命令均在仓库根目录执行，需要 Python 3.10 或更新版本。
+以下命令均在仓库根目录执行，已验证 Python 3.10～3.13。
 
 ```powershell
 python -m pip install -r examples/api/requirements.txt
@@ -61,7 +61,8 @@ pytest examples/api/tests -m "not live"
 pytest examples/api/tests/test_live_smoke.py -m live
 ```
 
-离线测试覆盖本地逻辑，live smoke 检查当前网络和账号。上述 smoke 与六个脚本已于
-2026-07-17 在 TokenHub 广州入口使用 `hy3` 实测通过。输出函数会省略
-response/request ID、HTTP headers 和凭据；直接使用 `print(response)` 可能暴露这些
-字段。
+离线测试覆盖本地逻辑，live smoke 检查 raw HTTP 200 和实际模型。六个脚本曾于
+2026-07-17 使用 `hy3` 实测通过；2026-08-05 的新探针受额度门禁阻止。当前状态、
+覆盖率、版本矩阵和脱敏演示见 [LIVE_VALIDATION.md](LIVE_VALIDATION.md)。输出函数会
+省略 response/request ID、HTTP headers 和凭据；直接使用 `print(response)` 可能
+暴露这些字段。

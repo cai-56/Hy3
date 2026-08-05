@@ -56,6 +56,26 @@ def test_local_http_base_url_is_allowed_for_explicit_local_testing() -> None:
     assert normalize_base_url("http://127.0.0.1:8000/v1/") == "http://127.0.0.1:8000/v1"
 
 
+def test_non_numeric_base_url_port_is_rejected() -> None:
+    with pytest.raises(ConfigError, match="port"):
+        normalize_base_url("https://tokenhub.tencentmaas.com:not-a-port/v1")
+
+
+def test_empty_base_url_port_is_rejected() -> None:
+    with pytest.raises(ConfigError, match="port"):
+        normalize_base_url("https://tokenhub.tencentmaas.com:/v1")
+
+
+def test_zero_base_url_port_is_rejected() -> None:
+    with pytest.raises(ConfigError, match="port"):
+        normalize_base_url("https://tokenhub.tencentmaas.com:0/v1")
+
+
+def test_out_of_range_base_url_port_is_rejected() -> None:
+    with pytest.raises(ConfigError, match="port"):
+        normalize_base_url("https://tokenhub.tencentmaas.com:70000/v1")
+
+
 def test_config_uses_hy3_default_model() -> None:
     config = ApiConfig.from_env(
         {

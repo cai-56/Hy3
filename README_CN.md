@@ -109,7 +109,9 @@ Hy3 在软件开发、办公生产、金融建模、前端设计、游戏制作�
 ## 快速开始
 
 腾讯云托管 API：先完成 [5 分钟快速开始](quickstart.md)，再按需运行
-[6 个示例](examples/api/README.md)。
+[6 个示例](examples/api/README.md)。实测状态、覆盖率、版本矩阵和脱敏终端演示集中在
+[验证记录](examples/api/LIVE_VALIDATION.md)。英文入口见
+[Hosted API Quickstart](quickstart_EN.md)。
 
 本地部署：先通过 [vLLM](#使用-vllm-推理) 或 [SGLang](#使用-sglang-推理) 启动服务，
 再调用 OpenAI 兼容 API：

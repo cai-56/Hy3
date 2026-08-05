@@ -82,7 +82,7 @@ curl "$HY3_BASE_URL/chat/completions" \
 
 ## 4. 用 OpenAI Python SDK 调用
 
-Python 示例需要 Python 3.10 或更新版本。从仓库根目录执行：
+Python 示例已在 Python 3.10～3.13 验证。从仓库根目录执行：
 
 ```powershell
 python -m pip install -r examples/api/requirements.txt
@@ -157,9 +157,11 @@ QPM/RPM、TPM、TPD 和并发限制取决于模型、套餐与 API Key 配置，
 
 ## 验证说明
 
-本文和六个示例已于 2026-07-17 在 TokenHub 广州入口使用 `model=hy3` 实测通过。
-示例只保留脱敏后的输出、参数和测量样本。凭据、HTTP headers、response/request ID
-和账户信息均已省略。模型文本、chunk 切分、时延和 jitter 每次运行都可能变化。
+六个示例曾于 2026-07-17 使用 `model=hy3` 实测通过。2026-08-05 的当前探针因免费
+额度耗尽返回 HTTP 402 / `401008`，六个脚本本轮未启动复跑。两次记录、覆盖率、
+Python 版本和脱敏终端演示见 [验证记录](examples/api/LIVE_VALIDATION.md)。凭据、
+endpoint、HTTP headers、response/request ID 和账户信息均未进入公开证据。模型文本、
+chunk 切分、时延和 jitter 每次运行都可能变化。
 
 参考文档：
 

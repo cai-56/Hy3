@@ -138,6 +138,14 @@ def normalize_base_url(raw_url: str) -> str:
     parsed = urlsplit(raw_url.strip())
     if parsed.scheme not in {"http", "https"} or not parsed.hostname:
         raise ConfigError("HY3_BASE_URL must be an absolute http(s) URL.")
+    try:
+        port = parsed.port
+    except ValueError as exc:
+        raise ConfigError("HY3_BASE_URL contains an invalid port.") from exc
+    if parsed.netloc.endswith(":"):
+        raise ConfigError("HY3_BASE_URL contains an empty port.")
+    if port == 0:
+        raise ConfigError("HY3_BASE_URL port must be between 1 and 65535.")
     if parsed.username or parsed.password:
         raise ConfigError("HY3_BASE_URL must not contain credentials.")
     if parsed.query or parsed.fragment:

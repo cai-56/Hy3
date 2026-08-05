@@ -111,8 +111,11 @@ Model usefulness is not fully captured by benchmarks. Based on extensive product
 
 ## Quickstart
 
-Tencent Cloud Hosted API: follow the [Hosted API quickstart (Chinese)](quickstart.md),
-then choose from the [six runnable examples (Chinese)](examples/api/README.md).
+Tencent Cloud hosted API:
+
+- [5-minute English quickstart](quickstart_EN.md)
+- [Live validation record and redacted terminal demo](examples/api/LIVE_VALIDATION.md)
+- [Full Chinese quickstart](quickstart.md) and [six runnable examples](examples/api/README.md)
 
 Local deployment: start Hy3 with [vLLM](#vllm) or [SGLang](#sglang), then call the
 OpenAI-compatible API:

@@ -1,5 +1,7 @@
 # Hy3 TaskRelay MCP
 
+English | [简体中文](README_CN.md)
+
 Hy3 TaskRelay is a local stdio MCP server for handing an interrupted long task to another session
 or MCP client. Hy3 performs semantic extraction, conflict reasoning, and continuation planning.
 Local code enforces input boundaries, credential redaction, stable IDs, evidence integrity,
@@ -7,6 +9,22 @@ timeouts, bounded retries, and output-schema validation.
 
 TaskRelay is stateless and read-only. It does not scan repositories, inspect agent logs, write
 files, execute commands, or create a database. The caller stores and transfers each checkpoint.
+
+![CodeBuddy to Codex native-client handoff](docs/demo/taskrelay_native_clients_2026-08-05.gif)
+
+The 44.5-second recording runs CodeBuddy Code 2.124.0 and Codex CLI 0.144.6 against the packaged stdio
+server. CodeBuddy creates a checkpoint; Codex audits the same artifact and creates a resume brief.
+The run uses local deterministic client-model adapters and a local deterministic TaskRelay
+provider, so it verifies native-client discovery, all three MCP calls, artifact linkage, exact HTTP
+200/model checks, and priority order. It does not measure live Hy3 or client-model quality. See the
+[sanitized record](docs/native_clients_2026-08-05.json) and [demo notes](docs/demo/README.md).
+
+Current online status (2026-08-05): the first production smoke call returned HTTP 402 before a
+verified response. It was not retried. The returned model identity is therefore unknown, and the
+frozen 10-task × 2-repeat live evaluation was not run. The
+[gate record](docs/live_validation_2026-08-05.json) contains no response body, endpoint, request ID,
+account detail, credential, or local path. The 14/14 result below is an offline contract check, not
+a live-model score.
 
 ## Scope
 
@@ -16,7 +34,7 @@ state, persist memory, or provide a user interface.
 
 ## 1. Install
 
-Requirements: Python 3.10 or newer and either `uv` or `pip`. The package uses the stable v1 line of
+Requirements: Python 3.10 through 3.14 and either `uv` or `pip`. The package uses the stable v1 line of
 the [official MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk/tree/v1.x), pinned
 to `mcp>=1.28.1,<2`.
 
@@ -44,6 +62,15 @@ python -m hy3_taskrelay
 ```
 
 The process waits for MCP JSON-RPC on stdin, so starting it directly shows no interactive prompt.
+
+To reproduce the executable core at the full source SHA used by the native-client recording:
+
+```bash
+uvx --from "git+https://github.com/cai-56/Hy3.git@1a7694ec9451f0300d683d7071e9a44ddc064c65#subdirectory=mcp_servers/hy3_taskrelay" hy3-taskrelay --selfcheck
+```
+
+The self-check starts the packaged stdio entry point, initializes MCP, lists exactly three tools,
+calls all three against a deterministic loopback provider, validates their linkage, and exits.
 
 ## 2. Configure the Hy3 API
 
@@ -219,9 +246,14 @@ artifact linkage, and whether resume evidence is genuinely new. If an existing a
 credential-like material, recreate it from sanitized source material. Never edit an artifact while
 retaining its old content-derived ID.
 
-## 8. Real-client validation and demo
+## 8. Validation records
 
-The 2026-07-20 cross-client run used one public synthetic fixture:
+The native-client recording at the top of this README is the current transport and artifact-chain
+evidence. Its source SHA, client versions, tool sequence, HTTP statuses, exact fixture-model match,
+artifact IDs, and validation boundary are stored in
+[`native_clients_2026-08-05.json`](docs/native_clients_2026-08-05.json).
+
+The earlier 2026-07-20 run used one public synthetic fixture:
 
 1. CodeBuddy Code 2.124.0 called `taskrelay_create_checkpoint` through a strict single-tool
    allowlist and created `cp_b3067b1cc7f4a430` with three grounded facts and two next steps.
@@ -229,11 +261,11 @@ The 2026-07-20 cross-client run used one public synthetic fixture:
 3. Codex called `taskrelay_audit_checkpoint` (`clean`, zero findings) and then
    `taskrelay_create_resume_brief`, creating `resume_bff690737dece30f` with priority order 1 → 2.
 
-The schema-valid artifacts are in [`docs/client_artifacts`](docs/client_artifacts). Sanitized
-client-event records are in [`docs/clients`](docs/clients). The
-[actual-call screenshots and short GIF](docs/demo) are rendered from those real call records and
-exact artifact IDs. Credentials, prompts, raw provider responses, request metadata, account data,
-and personal paths are not committed.
+The schema-valid historical artifacts are in [`docs/client_artifacts`](docs/client_artifacts).
+Sanitized historical client-event records are in [`docs/clients`](docs/clients). The 13.2-second
+[`taskrelay_cross_client.gif`](docs/demo/taskrelay_cross_client.gif) is a Pillow-rendered structure
+summary made from those records. It is not a native desktop recording. Credentials, prompts, raw
+provider responses, request metadata, account data, and personal paths are not committed.
 
 ## 9. Offline verification and evaluations
 
@@ -246,9 +278,18 @@ uv run --directory mcp_servers/hy3_taskrelay ruff check .
 uv run --directory mcp_servers/hy3_taskrelay python evals/run.py
 ```
 
-The evaluation bank contains 14 independent checks over two public synthetic fixtures:
+The [2026-08-05 verification record](docs/verification_2026-08-05.md) lists the exact offline,
+build, native-client, public-CI, and online-gate results.
+
+The offline bank contains 14 independent contract assertions over two public synthetic fixtures:
 [`interrupted_bug_fix.json`](examples/fixtures/interrupted_bug_fix.json) and
 [`requirements_change.json`](examples/fixtures/requirements_change.json).
+
+The separate frozen live dataset contains 10 public synthetic tasks and requires two repeats per
+task. It reports constraint retention, fact citation accuracy, unknown-reference rate,
+contradiction detection, next-step coverage, cross-repeat consistency, protocol-level cross-client
+consistency, variations, and failures. No 2026-08-05 live metrics exist because the prerequisite
+three-tool smoke stopped at HTTP 402. See [`evals/README.md`](evals/README.md) for metric definitions.
 
 MCP Inspector can exercise the stdio server after installation:
 
@@ -258,12 +299,12 @@ npx -y @modelcontextprotocol/inspector uv run --directory mcp_servers/hy3_taskre
 
 ## Acceptance evidence map
 
-| Issue requirement | Repository evidence | Remaining external gate |
+| Issue requirement | Repository evidence | Current status |
 |---|---|---|
-| Official MCP SDK and stdio | `pyproject.toml`, SDK memory-session tests, raw stdio test, [Inspector record](docs/inspector_2026-07-20.json) | None |
-| At least three clear tools | `server.py`, Pydantic contracts, tool-list and call tests | None |
-| Hy3 performs core reasoning | Prompts, validated structured generation, real HTTP client, [three-operation smoke](docs/live_smoke_2026-07-20.json) | None |
-| Environment-only key | `config.py`, redaction/error tests, sanitized [client records](docs/clients) | None |
-| Two MCP clients including CodeBuddy/WorkBuddy | CodeBuddy + Codex configs, versions, successful real calls, schema-valid [artifacts](docs/client_artifacts) | None |
-| One-command install | Console entry point, wheel/sdist with license, [clean-install record](docs/verification_2026-07-20.md) | None |
-| Demo GIF/video | [CodeBuddy → Codex actual-call demo](docs/demo/taskrelay_cross_client.gif) over a public synthetic fixture | None |
+| Official MCP SDK and stdio | `pyproject.toml`, SDK memory-session tests, raw stdio test, [Inspector record](docs/inspector_2026-07-20.json) | Implemented |
+| At least three clear tools | `server.py`, Pydantic contracts, tool-list and call tests | Implemented; self-check lists and calls exactly three |
+| Hy3 performs core reasoning | Prompts, validated structured generation, real HTTP client, historical [three-operation smoke](docs/live_smoke_2026-07-20.json) | Current production recheck stopped at HTTP 402; no current live score |
+| Environment-only key | `config.py`, redaction/error tests, sanitized records | Implemented |
+| Two MCP clients including CodeBuddy/WorkBuddy | CodeBuddy + Codex configs and current [native transport record](docs/native_clients_2026-08-05.json) | Native-client handoff passed with deterministic fixtures |
+| One-command install | Console entry point, fixed-SHA `uvx` command, wheel/sdist with license, `--selfcheck` | Implemented on Python 3.10–3.14 |
+| Demo GIF/video | [44.5-second native-client recording](docs/demo/taskrelay_native_clients_2026-08-05.gif) | Passed; scope stated above |

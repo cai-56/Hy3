@@ -1,0 +1,68 @@
+{
+  "record_kind": "taskrelay_native_client_transport_validation",
+  "date": "2026-08-05",
+  "source_sha": "1a7694ec9451f0300d683d7071e9a44ddc064c65",
+  "clients": {
+    "codebuddy": {
+      "name": "CodeBuddy Code",
+      "version": "2.124.0"
+    },
+    "codex": {
+      "name": "Codex CLI",
+      "version": "0.144.6"
+    }
+  },
+  "tool_sequence": [
+    "taskrelay_create_checkpoint",
+    "taskrelay_audit_checkpoint",
+    "taskrelay_create_resume_brief"
+  ],
+  "provider_verification": {
+    "requested_model": "hy3-native-demo",
+    "actual_model": "hy3-native-demo",
+    "http_statuses": [
+      200,
+      200,
+      200
+    ],
+    "identity_verified": true
+  },
+  "artifact_linkage": {
+    "checkpoint_id": "cp_373f9873c7b47571",
+    "checkpoint_id_preserved": true,
+    "audit_status": "clean",
+    "audit_findings": 0,
+    "resume_id": "resume_d8fbe6ea38b898ba",
+    "resume_priorities": [
+      1,
+      2
+    ]
+  },
+  "recording": {
+    "file": "taskrelay_native_clients_2026-08-05.gif",
+    "sha256": "86b3ccc9ffa1656ce9208ca7c9da6ece9adfb0f3d89dd2770ad21ff53dddaae4",
+    "duration_seconds": 44.5,
+    "frames": 85,
+    "width": 853,
+    "height": 720,
+    "capture_scope": "the native-client validation terminal window only"
+  },
+  "validation_boundary": {
+    "native_client_binaries_executed": true,
+    "stdio_mcp_server_executed": true,
+    "portable_artifact_handoff_verified": true,
+    "client_model_adapters": "local deterministic fixtures",
+    "taskrelay_provider": "local deterministic fixture",
+    "live_hy3_quality_measured": false,
+    "client_model_quality_measured": false
+  },
+  "privacy": {
+    "raw_client_streams_committed": false,
+    "credentials_committed": false,
+    "network_locations_committed": false,
+    "provider_correlation_values_committed": false,
+    "account_details_committed": false,
+    "local_paths_committed": false
+  },
+  "online_gate_record": "live_validation_2026-08-05.json"
+}

@@ -1,11 +1,28 @@
 # Hy3 TaskRelay MCP
 
+[English](README.md) | 简体中文
+
 Hy3 TaskRelay 是一个本地 stdio MCP Server，用于把中断的长任务交接给另一会话或另一
 MCP 客户端。Hy3 负责语义抽取、冲突推理和续作规划；本地代码负责输入边界、凭据脱敏、
 稳定 ID、evidence 完整性、超时、有限重试和输出 schema 校验。
 
 TaskRelay 无状态且只读：不扫描仓库，不读取 agent 日志，不写文件，不执行命令，也不
 建立数据库。调用方负责保存和传递返回的 checkpoint。
+
+![CodeBuddy 到 Codex 的原生客户端接力](docs/demo/taskrelay_native_clients_2026-08-05.gif)
+
+这段 44.5 秒录屏实际运行 CodeBuddy Code 2.124.0、Codex CLI 0.144.6 和本项目的 stdio
+Server。CodeBuddy 创建 checkpoint，Codex 接收同一份 artifact，完成 audit 和 resume。
+本次录制使用本地确定性客户端模型适配器和本地确定性 TaskRelay 服务适配器，验证范围是
+原生客户端发现、三个 MCP 调用、产物关联、HTTP 200/模型精确匹配和优先级顺序。
+它不评价在线 Hy3 或客户端模型质量。脱敏结果见
+[`native_clients_2026-08-05.json`](docs/native_clients_2026-08-05.json)，录制说明见
+[`docs/demo/README.md`](docs/demo/README.md)。
+
+当前在线状态（2026-08-05）：生产环境冒烟验证的第一次调用在取得可验证响应前返回 HTTP
+402，因此没有重试。`actual_model` 无法确认，冻结的 10 个任务 × 2 次重复评测也没有
+运行。[门禁记录](docs/live_validation_2026-08-05.json)不包含响应体、服务地址、请求 ID、
+账户信息、凭据或本机路径。下文的 14/14 是离线契约断言，不是在线模型得分。
 
 ## 范围
 
@@ -15,7 +32,7 @@ checkpoint、audit 和 resume artifact。它不采集项目状态，不持久化
 
 ## 1. 安装
 
-需要 Python 3.10+，以及 `uv` 或 `pip`。项目使用
+需要 Python 3.10–3.14，以及 `uv` 或 `pip`。项目使用
 [官方 MCP Python SDK 稳定 v1](https://github.com/modelcontextprotocol/python-sdk/tree/v1.x)，
 依赖固定为 `mcp>=1.28.1,<2`。
 
@@ -43,6 +60,15 @@ python -m hy3_taskrelay
 ```
 
 进程在 stdin 等待 MCP JSON-RPC；直接启动时不会显示交互提示。
+
+以下单条命令固定到原生客户端录屏所用的完整源码 SHA，并运行打包后的自检：
+
+```bash
+uvx --from "git+https://github.com/cai-56/Hy3.git@1a7694ec9451f0300d683d7071e9a44ddc064c65#subdirectory=mcp_servers/hy3_taskrelay" hy3-taskrelay --selfcheck
+```
+
+自检会启动打包后的 stdio 入口，初始化 MCP，列出恰好三个工具，通过确定性回环服务
+适配器依次调用三个工具，校验产物关联，然后退出。
 
 ## 2. 配置 Hy3 API
 
@@ -206,9 +232,13 @@ Schema 或 evidence 报错：错误只在安全时指出契约字段，不会回
 是新证据。已有 artifact 若包含疑似凭据，应从已脱敏源材料重新创建。不要修改 artifact
 后继续使用旧的内容 ID。
 
-## 8. 真实客户端验证与演示
+## 8. 验证记录
 
-2026-07-20 的跨客户端流程使用同一份公开合成 fixture：
+README 顶部的原生客户端录屏是当前传输层与产物链证据。完整源码 SHA、客户端版本、
+工具顺序、HTTP 状态、合成模型精确匹配、产物 ID 和验证边界记录在
+[`native_clients_2026-08-05.json`](docs/native_clients_2026-08-05.json)。
+
+较早的 2026-07-20 流程使用同一份公开合成样例：
 
 1. CodeBuddy Code 2.124.0 通过严格单 tool allowlist 调用
    `taskrelay_create_checkpoint`，生成 `cp_b3067b1cc7f4a430`，包含 3 条事实和 2 个后续步骤。
@@ -216,9 +246,10 @@ Schema 或 evidence 报错：错误只在安全时指出契约字段，不会回
 3. Codex 调用 `taskrelay_audit_checkpoint`（`clean`、0 条发现），再调用
    `taskrelay_create_resume_brief`，生成 `resume_bff690737dece30f`，优先级顺序 1 → 2。
 
-通过 schema 校验的产物在 [`docs/client_artifacts`](docs/client_artifacts)，脱敏后的客户端
-事件记录在 [`docs/clients`](docs/clients)。[真实调用截图与短 GIF](docs/demo)根据这些真实
-调用记录和精确 artifact ID 渲染。仓库不提交凭据、prompt、原始 provider 响应、请求
+通过 schema 校验的历史产物在 [`docs/client_artifacts`](docs/client_artifacts)，脱敏后的
+历史客户端事件记录在 [`docs/clients`](docs/clients)。13.2 秒的
+[`taskrelay_cross_client.gif`](docs/demo/taskrelay_cross_client.gif) 是根据这些记录用 Pillow
+绘制的结构摘要，不是原生桌面录屏。仓库不提交凭据、prompt、原始 provider 响应、请求
 元数据、账户数据或个人路径。
 
 ## 9. 离线验证与评测
@@ -232,9 +263,17 @@ uv run --directory mcp_servers/hy3_taskrelay ruff check .
 uv run --directory mcp_servers/hy3_taskrelay python evals/run.py
 ```
 
-评测库包含 14 个相互独立的检查，使用两份公开合成 fixture：
+[2026-08-05 验证记录](docs/verification_2026-08-05.md)列出离线、构建、原生客户端、公开 CI
+和在线门禁的准确结果。
+
+离线评测库包含 14 个相互独立的契约断言，使用两份公开合成样例：
 [`interrupted_bug_fix.json`](examples/fixtures/interrupted_bug_fix.json) 和
 [`requirements_change.json`](examples/fixtures/requirements_change.json)。
+
+另一套冻结的在线数据包含 10 个公开合成任务，每个任务要求重复两次。指标包括约束保留、
+事实引用准确率、未知引用率、矛盾检出、后续步骤覆盖、跨重复一致性、协议级跨客户端一致性、
+变化案例和失败案例。2026-08-05 没有在线指标，因为前置三工具冒烟验证在 HTTP 402 时停止。
+指标定义见 [`evals/README.md`](evals/README.md)。
 
 安装后可用 MCP Inspector 检查 stdio：
 
@@ -244,12 +283,12 @@ npx -y @modelcontextprotocol/inspector uv run --directory mcp_servers/hy3_taskre
 
 ## 官方验收映射
 
-| 官方要求 | 仓库内证据 | 外部门 |
+| 官方要求 | 仓库内证据 | 当前状态 |
 |---|---|---|
-| 官方 MCP SDK 与 stdio | `pyproject.toml`、SDK memory-session、原始 stdio 测试、[Inspector 记录](docs/inspector_2026-07-20.json) | 无 |
-| 至少 3 个清晰 tool | `server.py`、Pydantic 契约、tool list/call 测试 | 无 |
-| Hy3 完成核心推理 | prompts、结构化校验、真实 HTTP client、[三操作 smoke](docs/live_smoke_2026-07-20.json) | 无 |
-| Key 只来自环境变量 | `config.py`、脱敏/错误测试、[脱敏客户端记录](docs/clients) | 无 |
-| 两个客户端且含 CodeBuddy/WorkBuddy | CodeBuddy + Codex 配置、版本、真实调用和 [schema-valid 产物](docs/client_artifacts) | 无 |
-| 一键安装 | console entry point、含许可证的 wheel/sdist、[clean install 记录](docs/verification_2026-07-20.md) | 无 |
-| GIF/短视频 | 基于公开合成 fixture 的 [CodeBuddy → Codex 真实调用演示](docs/demo/taskrelay_cross_client.gif) | 无 |
+| 官方 MCP SDK 与 stdio | `pyproject.toml`、SDK memory-session、原始 stdio 测试、[Inspector 记录](docs/inspector_2026-07-20.json) | 已实现 |
+| 至少 3 个清晰 tool | `server.py`、Pydantic 契约、tool list/call 测试 | 已实现；selfcheck 会列出并调用恰好三个 |
+| Hy3 完成核心推理 | prompts、结构化校验、真实 HTTP client、历史[三操作 smoke](docs/live_smoke_2026-07-20.json) | 本轮生产复查停在 HTTP 402，无当前在线得分 |
+| Key 只来自环境变量 | `config.py`、脱敏/错误测试和脱敏记录 | 已实现 |
+| 两个客户端且含 CodeBuddy/WorkBuddy | CodeBuddy + Codex 配置与当前[原生传输记录](docs/native_clients_2026-08-05.json) | 确定性合成样例下接力通过 |
+| 一键安装 | console entry point、固定 SHA 的 `uvx` 命令、含许可证的 wheel/sdist、`--selfcheck` | Python 3.10–3.14 已覆盖 |
+| GIF/短视频 | [44.5 秒原生客户端录屏](docs/demo/taskrelay_native_clients_2026-08-05.gif) | 通过；范围见上文 |

@@ -214,8 +214,9 @@ We provide [AngelSlim](https://github.com/tencent/AngelSlim), a more accessible,
 
 [Hy3 TaskRelay MCP](./mcp_servers/hy3_taskrelay/README.md) is a stateless stdio server for
 evidence-grounded checkpoints, checkpoint audits, and continuation briefs for interrupted tasks.
-Its [13.2-second actual-call demo](./mcp_servers/hy3_taskrelay/docs/demo/taskrelay_cross_client.gif)
-shows a verified CodeBuddy-to-Codex handoff over a public synthetic fixture.
+Its [44.5-second native-client recording](./mcp_servers/hy3_taskrelay/docs/demo/taskrelay_native_clients_2026-08-05.gif)
+shows the CodeBuddy-to-Codex MCP handoff with deterministic local adapters. It verifies client
+transport and artifact linkage; the package README records the separate online gate.
 
 ## License
 

@@ -214,8 +214,9 @@ Hy3 提供了完整的模型微调流程，详细的微调文档请参考：[模
 
 [Hy3 TaskRelay MCP](./mcp_servers/hy3_taskrelay/README_CN.md) 是一个无状态 stdio Server，
 用于为中断任务生成带证据的 checkpoint、审计 checkpoint，并生成续作 brief。
-其 [13.2 秒真实调用演示](./mcp_servers/hy3_taskrelay/docs/demo/taskrelay_cross_client.gif)展示了
-基于公开合成 fixture、经过验证的 CodeBuddy 到 Codex 交接流程。
+其 [44.5 秒原生客户端录屏](./mcp_servers/hy3_taskrelay/docs/demo/taskrelay_native_clients_2026-08-05.gif)
+展示 CodeBuddy 到 Codex 的 MCP 接力。录制使用本地确定性适配器，验证客户端传输与产物
+关联；独立的在线门禁状态见包内 README。
 
 ## 许可证
 

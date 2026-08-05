@@ -4,11 +4,16 @@
 assume they are copied into the root of a Hy3 checkout and use only relative paths. None contains a
 credential value.
 
-CodeBuddy Code 2.124.0 and Codex CLI 0.144.6 were validated with real MCP calls over the same public
-synthetic fixture. Their sanitized records and schema-valid outputs are in
-[`../../docs/clients`](../../docs/clients) and
-[`../../docs/client_artifacts`](../../docs/client_artifacts). Cursor remains an optional,
-format-checked third-client example and was not used for the two-client gate.
+CodeBuddy Code 2.124.0 and Codex CLI 0.144.6 were run against the native stdio server on 2026-08-05.
+The deterministic local validation called all three tools and preserved the checkpoint across the
+client boundary. Its [sanitized record](../../docs/native_clients_2026-08-05.json) and
+[44.5-second recording](../../docs/demo/taskrelay_native_clients_2026-08-05.gif) verify client/MCP
+transport and artifact linkage; they do not measure live Hy3 or client-model quality.
+
+The [`../../docs/clients`](../../docs/clients) and
+[`../../docs/client_artifacts`](../../docs/client_artifacts) directories retain the earlier
+2026-07-20 sanitized run. Cursor remains an optional, format-checked third-client example and was
+not used for the two-client gate.
 
 ## Reproduce CodeBuddy headless discovery
 

@@ -2,26 +2,56 @@
 
 本目录记录 8 个产品在 2026-07-23 通过 OpenAI-compatible Chat Completions 接入 Hy3 的真实验证。所有产品使用同一份脱敏任务、同一组标记和实际模型 `hy3-preview`，并在第二个干净配置中复核。
 
+## 3 分钟评审入口
+
+- [机器可读清单：8 个产品、34 份媒体及其 SHA-256](verification/manifest.json)
+- [8 个产品总览与逐项证据](#已验证产品)
+- [Hy3 接入体检台 v0.1.3 Release](https://github.com/cai-56/hy3-integration-doctor/releases/tag/v0.1.3)
+- [49.38 秒真实在线 GIF](https://github.com/cai-56/hy3-integration-doctor/blob/v0.1.3/demo/online-demo-v0.1.3.gif)
+- [分支 CI：Windows / Linux × Python 3.10 / 3.14](https://github.com/cai-56/hy3-integration-doctor/actions/runs/30246114084)
+- [v0.1.3 标签 CI：Windows / Linux × Python 3.10 / 3.14](https://github.com/cai-56/hy3-integration-doctor/actions/runs/30246207480)
+- [安全边界：凭据、网络、脱敏与响应上限](https://github.com/cai-56/hy3-integration-doctor/blob/v0.1.3/docs/security.md)
+
 ## 已验证产品
 
-| 产品 | 类别 | 版本 | 指南 | 验证记录 |
-| --- | --- | --- | --- | --- |
-| CodeBuddy Code | CLI | 2.124.0 | [接入步骤](guides/codebuddy-code.md) | [在线记录](verification/records/codebuddy-code-2.124.0-2026-07-23.md) |
-| Aider | CLI | 0.86.2 | [接入步骤](guides/aider.md) | [在线记录](verification/records/aider-0.86.2-2026-07-23.md) |
-| OpenCode | CLI | 1.18.3 | [接入步骤](guides/opencode.md) | [在线记录](verification/records/opencode-1.18.3-2026-07-23.md) |
-| Cline | IDE 扩展 | 4.0.10 | [接入步骤](guides/cline.md) | [在线记录](verification/records/cline-4.0.10-2026-07-23.md) |
-| Continue | IDE 扩展 | 2.0.0 | [接入步骤](guides/continue.md) | [在线记录](verification/records/continue-2.0.0-2026-07-23.md) |
-| Roo Code | IDE 扩展 | 3.54.0 | [接入步骤](guides/roo-code.md) | [在线记录](verification/records/roo-code-3.54.0-2026-07-23.md) |
-| Open WebUI | Web 客户端 | 0.10.1 | [接入步骤](guides/open-webui.md) | [在线记录](verification/records/open-webui-0.10.1-2026-07-23.md) |
-| Flowise | 工作流平台 | 3.1.2 | [接入步骤](guides/flowise.md) | [在线记录](verification/records/flowise-3.1.2-2026-07-23.md) |
+| 产品 | 类别 | 版本 | 指南 | 在线记录 | 最佳截图 |
+| --- | --- | --- | --- | --- | --- |
+| CodeBuddy Code | CLI | 2.124.0 | [接入步骤](guides/codebuddy-code.md) | [在线记录](verification/records/codebuddy-code-2.124.0-2026-07-23.md) | [查看](assets/codebuddy-code/native-cli-online.png) |
+| Aider | CLI | 0.86.2 | [接入步骤](guides/aider.md) | [在线记录](verification/records/aider-0.86.2-2026-07-23.md) | [查看](assets/aider/clean-reverification-online.jpg) |
+| OpenCode | CLI | 1.18.3 | [接入步骤](guides/opencode.md) | [在线记录](verification/records/opencode-1.18.3-2026-07-23.md) | [查看](assets/opencode/first-turn-online.jpg) |
+| Cline | IDE 扩展 | 4.0.10 | [接入步骤](guides/cline.md) | [在线记录](verification/records/cline-4.0.10-2026-07-23.md) | [查看](assets/cline/task-output-online.png) |
+| Continue | IDE 扩展 | 2.0.0 | [接入步骤](guides/continue.md) | [在线记录](verification/records/continue-2.0.0-2026-07-23.md) | [查看](assets/continue/task-output-online.png) |
+| Roo Code | IDE 扩展 | 3.54.0 | [接入步骤](guides/roo-code.md) | [在线记录](verification/records/roo-code-3.54.0-2026-07-23.md) | [查看](assets/roo-code/task-output-online.png) |
+| Open WebUI | Web 客户端 | 0.10.1 | [接入步骤](guides/open-webui.md) | [在线记录](verification/records/open-webui-0.10.1-2026-07-23.md) | [查看](assets/open-webui/first-turn-online.jpg) |
+| Flowise | 工作流平台 | 3.1.2 | [接入步骤](guides/flowise.md) | [在线记录](verification/records/flowise-3.1.2-2026-07-23.md) | [查看](assets/flowise/first-turn-online.png) |
 
 覆盖 4 类产品：CLI、IDE 扩展、Web 客户端和工作流平台。
+
+## 四类真实界面
+
+CLI｜CodeBuddy Code 2.124.0：原生命令行显式选择 `hy3-preview`，并取得真实在线最小响应（2026-07-23）。
+
+![CodeBuddy Code 原生命令行在线响应](assets/codebuddy-code/native-cli-online.png)
+
+IDE｜Roo Code 3.54.0：Ask 模式在线完成统一诊断任务，画面保留 API Request、`HY3_TASK_V1` 与 Task Completed（2026-07-23）。
+
+![Roo Code 在线完成统一诊断任务](assets/roo-code/task-output-online.png)
+
+Web｜Open WebUI 0.10.1：选择 Hy3 preview 后，首轮在线响应命中 `HY3_FIRST_TURN_V1`（2026-07-23）。
+
+![Open WebUI 首轮在线响应](assets/open-webui/first-turn-online.jpg)
+
+工作流｜Flowise 3.1.2：OpenAI Custom Model、Prompt Template 与 LLM Chain 接入 `hy3-preview`，返回正文并命中首轮标记（2026-07-23）。
+
+![Flowise 工作流首轮在线响应](assets/flowise/first-turn-online.png)
 
 ## 独立小作品
 
 [Hy3 接入体检台 v0.1.3](https://github.com/cai-56/hy3-integration-doctor/releases/tag/v0.1.3)
 用于排查客户端接入 Hy3 时的配置问题。它能离线检查 Base URL、模型 ID、鉴权位置和协议，
 也能在用户明确开启在线模式后发送最小探针，并输出脱敏的中文修复步骤。
+
+体检台不是简单的 API 转发器。Base URL、模型 ID、鉴权位置和协议问题由本地固定规则检查；在线探针只有在 HTTP 状态为 200、响应模型与预期模型完全一致、正文精确返回 `HY3_PROBE_OK` 时才算通过。`diagnose --live` 只让 Hy3 排序并解释已经脱敏、通过结构校验的本地发现；问题代码、参考项、修复配置和验证步骤仍受本地白名单与 Schema 约束。
 
 - [固定版本源码](https://github.com/cai-56/hy3-integration-doctor/tree/v0.1.3)
 - [49.38 秒在线演示](https://github.com/cai-56/hy3-integration-doctor/blob/v0.1.3/demo/online-demo-v0.1.3.gif)

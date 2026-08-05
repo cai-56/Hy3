@@ -59,9 +59,10 @@ async def run(
     *,
     transport: httpx.AsyncBaseTransport | None = None,
     source_sha: str | None = None,
+    settings: Settings | None = None,
 ) -> dict[str, object]:
     fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
-    settings = Settings.from_env()
+    settings = settings or Settings.from_env()
     secret = settings.api_key.get_secret_value()
     client = Hy3Client(settings, transport=transport)
     service = TaskRelayService(client, secret_values=(secret,))

@@ -4,6 +4,7 @@ from pathlib import Path
 import httpx
 import pytest
 
+from hy3_taskrelay.config import Settings
 from scripts.live_smoke import run
 
 
@@ -27,6 +28,13 @@ async def test_live_smoke_records_verified_http_model_package_and_source_identit
         fixture_path,
         transport=httpx.MockTransport(handler),
         source_sha="a" * 40,
+        settings=Settings.from_env(
+            {
+                "HY3_API_KEY": "test-key",
+                "HY3_BASE_URL": "https://example.test/v1",
+                "HY3_MODEL": "hy3",
+            }
+        ),
     )
 
     assert record["source_sha"] == "a" * 40

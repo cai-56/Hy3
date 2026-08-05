@@ -1,5 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 
+import { clearedHy3EnvironmentValues } from "./src/environment";
+
+const isCapturingLiveEvidence =
+  process.env.REPLAYLAB_CAPTURE_LIVE_DEMO === "1" ||
+  process.env.REPLAYLAB_CAPTURE_CONTINUOUS_DEMO === "1";
+const frontendEnvironmentOverrides = clearedHy3EnvironmentValues(process.env);
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: false,
@@ -20,17 +27,18 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: "uv run uvicorn replaylab.main:app --host 127.0.0.1 --port 8000",
+      command: "uv run --offline uvicorn replaylab.main:app --host 127.0.0.1 --port 8000",
       cwd: "../backend",
       url: "http://127.0.0.1:8000/api/health",
-      reuseExistingServer: true,
+      reuseExistingServer: !isCapturingLiveEvidence,
       timeout: 120_000,
     },
     {
-      command: "npm run dev -- --port 5173",
+      command: "npm run dev -- --port 5173 --strictPort",
       cwd: ".",
+      env: frontendEnvironmentOverrides,
       url: "http://127.0.0.1:5173",
-      reuseExistingServer: true,
+      reuseExistingServer: !isCapturingLiveEvidence,
       timeout: 120_000,
     },
   ],

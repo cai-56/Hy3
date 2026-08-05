@@ -1,0 +1,36 @@
+{
+  "date": "2026-08-05",
+  "media": "replaylab-live-walkthrough-2026-08-05.webm",
+  "sha256": "5b4bee886c0c0029c14aa37479a4e675bf9e1dfe726cd1569f8ddecdfcd5780e",
+  "continuous": true,
+  "resolution": {
+    "width": 720,
+    "height": 450
+  },
+  "recording_wall_duration_ms": 51778,
+  "media_duration_ms": 52160,
+  "frame_span_ms": 51065.382080078125,
+  "observed_frames": 3640,
+  "requested_model": "hy3-preview",
+  "actual_models": [
+    "hy3-preview"
+  ],
+  "http_statuses": [
+    200,
+    200
+  ],
+  "fixtures": [
+    {
+      "fixture_id": "research-grounding",
+      "first_divergence_step_id": "step-006-unsupported-causal-leap",
+      "placement": "result shown at recording start after a real pre-recording call"
+    },
+    {
+      "fixture_id": "coding-loop",
+      "first_divergence_step_id": "step-006-repeat-patch",
+      "placement": "complete real call recorded from click through result"
+    }
+  ],
+  "post_processing": "spatial crop to the active 720x450 viewport only; no temporal cuts or content replacement",
+  "privacy": "public synthetic fixtures only; no key, endpoint, request ID, account, or local path"
+}

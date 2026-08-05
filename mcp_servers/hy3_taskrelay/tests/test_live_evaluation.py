@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -141,18 +142,21 @@ def test_metric_aggregation_reports_rates_failures_and_repeat_variation() -> Non
             "repeat": 1,
             "tools": successful_tools,
             "scores": scores(1, 4),
+            "cross_client_handoff": {"consistent": True},
         },
         {
             "task_id": "stable",
             "repeat": 2,
             "tools": successful_tools,
             "scores": scores(1, 4),
+            "cross_client_handoff": {"consistent": True},
         },
         {
             "task_id": "varied",
             "repeat": 1,
             "tools": successful_tools,
             "scores": scores(1, 4),
+            "cross_client_handoff": {"consistent": True},
         },
         {
             "task_id": "varied",
@@ -175,6 +179,7 @@ def test_metric_aggregation_reports_rates_failures_and_repeat_variation() -> Non
                 },
             },
             "scores": scores(0, 0),
+            "cross_client_handoff": {"consistent": False},
         },
     ]
 
@@ -195,6 +200,12 @@ def test_metric_aggregation_reports_rates_failures_and_repeat_variation() -> Non
         "consistent_pairs": 1,
         "eligible_pairs": 2,
         "rate": 0.5,
+    }
+    assert summary["cross_client_consistency"] == {
+        "consistent_handoffs": 3,
+        "attempted_handoffs": 4,
+        "rate": 0.75,
+        "scope": "portable CodeBuddy checkpoint to Codex audit/resume artifact linkage",
     }
     assert [case["tool"] for case in summary["failure_cases"]] == [
         "checkpoint",
@@ -231,6 +242,25 @@ def test_public_record_allows_taskrelay_artifact_ids() -> None:
     )
 
 
+def test_blocked_stage2_record_does_not_invent_online_results() -> None:
+    project_root = Path(__file__).resolve().parents[1]
+    record = json.loads(
+        (project_root / "docs" / "live_validation_2026-08-05.json").read_text(encoding="utf-8")
+    )
+
+    assert record["provider_identity"] == {
+        "requested_model": "hy3",
+        "actual_model": None,
+        "http_status": 402,
+        "identity_verified": False,
+        "success_rule": "HTTP 200 and exact requested/actual model match",
+    }
+    assert record["three_tool_smoke"]["verified_provider_calls"] == 0
+    assert record["live_evaluation"]["completed_tasks"] == 0
+    assert all(value is None for value in record["live_evaluation"]["metrics"].values())
+    assert_public_record(record, ())
+
+
 def test_evaluation_record_pins_source_dataset_model_and_package_identity() -> None:
     dataset = {
         "schema_version": "1.0",
@@ -255,7 +285,13 @@ def test_evaluation_record_pins_source_dataset_model_and_package_identity() -> N
         for tool in ("checkpoint", "audit", "resume")
     }
     attempts = [
-        {"task_id": "stable", "repeat": repeat, "tools": tools, "scores": score}
+        {
+            "task_id": "stable",
+            "repeat": repeat,
+            "tools": tools,
+            "scores": score,
+            "cross_client_handoff": {"consistent": True},
+        }
         for repeat in (1, 2)
     ]
 

@@ -1,0 +1,57 @@
+{
+  "record_kind": "taskrelay_stage2_online_gate",
+  "date": "2026-08-05",
+  "source_sha": "881c5262783a443abd8b7b07e281bf6afa4de0ab",
+  "package_versions": {
+    "httpx": "0.28.1",
+    "hy3-taskrelay": "0.1.0",
+    "mcp": "1.28.1",
+    "pydantic": "2.13.4"
+  },
+  "generation_parameters": {
+    "max_completion_tokens": 1600,
+    "reasoning_effort": "high",
+    "temperature": 0.9,
+    "top_p": 1.0
+  },
+  "provider_identity": {
+    "requested_model": "hy3",
+    "actual_model": null,
+    "http_status": 402,
+    "identity_verified": false,
+    "success_rule": "HTTP 200 and exact requested/actual model match"
+  },
+  "three_tool_smoke": {
+    "status": "blocked",
+    "verified_provider_calls": 0,
+    "operations": {
+      "taskrelay_create_checkpoint": "failed_before_verified_response",
+      "taskrelay_audit_checkpoint": "not_run",
+      "taskrelay_create_resume_brief": "not_run"
+    },
+    "retry_decision": "not_retried_after_non_transient_http_status"
+  },
+  "live_evaluation": {
+    "status": "not_run_after_smoke_gate",
+    "dataset_sha256": "63b0e1b5f82a3f356eca4095f3d4e59ba60af4076f6c072802b65448ffa31151",
+    "synthetic_task_count": 10,
+    "planned_repeats": 2,
+    "planned_attempts": 20,
+    "planned_tool_invocations": 60,
+    "provider_request_ceiling_with_one_repair": 120,
+    "completed_tasks": 0,
+    "metrics": {
+      "constraint_retention_rate": null,
+      "fact_citation_accuracy": null,
+      "unknown_reference_rate": null,
+      "contradiction_detection_rate": null,
+      "next_step_coverage_rate": null,
+      "cross_client_consistency": null,
+      "cross_repeat_consistency": null,
+      "variation_cases": null,
+      "failure_cases": null
+    }
+  },
+  "external_gate": "provider_rejected_before_verified_response",
+  "record_policy": "No response body, credential, network location, provider request identifier, account detail, or local path is recorded."
+}

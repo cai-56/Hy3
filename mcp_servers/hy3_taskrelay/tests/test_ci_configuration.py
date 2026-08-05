@@ -55,5 +55,7 @@ def test_public_ci_covers_supported_boundaries_and_all_release_gates() -> None:
 
     assert "contents: read" in workflow
     assert "HY3_API_KEY" not in workflow
+    assert "HY3_BASE_URL" not in workflow
     assert "secrets." not in workflow
-    assert "tokenhub.tencentmaas.com" not in workflow
+    assert "http://" not in workflow
+    assert "https://" not in workflow

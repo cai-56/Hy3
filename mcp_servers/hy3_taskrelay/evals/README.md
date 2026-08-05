@@ -44,6 +44,10 @@ The reported metrics have intentionally narrow definitions:
   cases must cite the frozen evidence pair.
 - **Next-step coverage rate:** expected action cues present in checkpoint or resume steps.
 - **Cross-repeat consistency:** agreement of tool outcomes and metric pass counts across repeat pairs.
+- **Cross-client consistency:** successful portable JSON linkage from the CodeBuddy checkpoint role
+  to the Codex audit/resume role: checkpoint IDs and evidence remain unchanged and resume priorities
+  stay ordered. This is a protocol-level boundary metric; native client execution is verified
+  separately in the recorded client demo.
 - **Failure and variation cases:** stable task/repeat/tool coordinates and differing dimensions;
   exception messages and raw content are never published.
 

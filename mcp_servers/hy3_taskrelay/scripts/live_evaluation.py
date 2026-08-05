@@ -25,9 +25,12 @@ from hy3_taskrelay.hy3_client import (
 )
 from hy3_taskrelay.schemas import (
     AuditCheckpointInput,
+    AuditResult,
+    Checkpoint,
     CreateCheckpointInput,
     CreateResumeBriefInput,
     Evidence,
+    ResumeBrief,
 )
 from hy3_taskrelay.service import TaskRelayService
 
@@ -373,6 +376,13 @@ def aggregate_metrics(attempts: list[dict[str, Any]]) -> dict[str, Any]:
         "eligible_pairs": eligible_pairs,
         "rate": _rate(consistent_pairs, eligible_pairs),
     }
+    consistent_handoffs = sum(attempt["cross_client_handoff"]["consistent"] for attempt in attempts)
+    summary["cross_client_consistency"] = {
+        "consistent_handoffs": consistent_handoffs,
+        "attempted_handoffs": len(attempts),
+        "rate": _rate(consistent_handoffs, len(attempts)),
+        "scope": "portable CodeBuddy checkpoint to Codex audit/resume artifact linkage",
+    }
     summary["failure_cases"] = failures
     summary["variation_cases"] = variations
     return summary
@@ -510,6 +520,33 @@ def _skipped_record() -> dict[str, object]:
     }
 
 
+def _handoff_record(
+    *,
+    consistent: bool,
+    checkpoint: Checkpoint | None = None,
+    audit: AuditResult | None = None,
+    resume: ResumeBrief | None = None,
+) -> dict[str, object]:
+    """Record the portable artifact boundary without claiming native-client execution."""
+
+    linkage = (
+        checkpoint is not None
+        and audit is not None
+        and resume is not None
+        and audit.checkpoint_id == checkpoint.checkpoint_id
+        and resume.checkpoint_id == checkpoint.checkpoint_id
+        and audit.evidence == checkpoint.evidence
+        and [step.priority for step in resume.next_steps]
+        == sorted(step.priority for step in resume.next_steps)
+    )
+    return {
+        "source_client_role": "CodeBuddy checkpoint",
+        "target_client_role": "Codex audit/resume",
+        "portable_json_round_trip": checkpoint is not None,
+        "consistent": bool(consistent and linkage),
+    }
+
+
 async def _run_attempt(
     case: dict[str, Any],
     repeat: int,
@@ -533,7 +570,9 @@ async def _run_attempt(
             "repeat": repeat,
             "tools": tools,
             "scores": _failed_scores(case),
+            "cross_client_handoff": _handoff_record(consistent=False),
         }
+    portable_checkpoint = Checkpoint.model_validate_json(checkpoint.model_dump_json())
     artifacts["checkpoint"] = checkpoint.model_dump(mode="json")
     tools["checkpoint"] = {
         "status": "success",
@@ -547,7 +586,7 @@ async def _run_attempt(
     try:
         audit = await service.audit_checkpoint(
             AuditCheckpointInput(
-                checkpoint=checkpoint,
+                checkpoint=portable_checkpoint,
                 additional_evidence=case["additional_evidence"],
             )
         )
@@ -559,7 +598,11 @@ async def _run_attempt(
             "repeat": repeat,
             "tools": tools,
             "scores": _failed_scores(case),
+            "cross_client_handoff": _handoff_record(
+                consistent=False, checkpoint=portable_checkpoint
+            ),
         }
+    portable_audit = AuditResult.model_validate_json(audit.model_dump_json())
     artifacts["audit"] = audit.model_dump(mode="json")
     tools["audit"] = {
         "status": "success",
@@ -573,8 +616,8 @@ async def _run_attempt(
     try:
         resume = await service.create_resume_brief(
             CreateResumeBriefInput(
-                checkpoint=checkpoint,
-                audit=audit,
+                checkpoint=portable_checkpoint,
+                audit=portable_audit,
                 continuation_context=case["continuation_context"],
             )
         )
@@ -585,6 +628,11 @@ async def _run_attempt(
             "repeat": repeat,
             "tools": tools,
             "scores": _failed_scores(case),
+            "cross_client_handoff": _handoff_record(
+                consistent=False,
+                checkpoint=portable_checkpoint,
+                audit=portable_audit,
+            ),
         }
     artifacts["resume"] = resume.model_dump(mode="json")
     tools["resume"] = {
@@ -599,6 +647,12 @@ async def _run_attempt(
         "repeat": repeat,
         "tools": tools,
         "scores": score_attempt(case, artifacts),
+        "cross_client_handoff": _handoff_record(
+            consistent=True,
+            checkpoint=portable_checkpoint,
+            audit=portable_audit,
+            resume=resume,
+        ),
     }
 
 

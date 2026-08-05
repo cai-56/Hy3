@@ -1,6 +1,7 @@
 import asyncio
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -228,3 +229,25 @@ async def test_provider_cancellation_is_never_converted_into_a_repair() -> None:
         await ReplayLabService(provider).analyze(task)
 
     assert provider.repair_calls == 0
+
+
+@pytest.mark.asyncio
+async def test_report_distinguishes_requested_and_actual_provider_models() -> None:
+    task = TaskSpec.model_validate(load_json("fixtures/coding-loop/input.json"))
+    provider = RecordingProvider(load_json("fixtures/coding-loop/provider-output.json"))
+    provider.model = "hy3"
+    provider.last_metrics = SimpleNamespace(
+        latency_ms=321,
+        prompt_tokens=100,
+        completion_tokens=40,
+        total_tokens=140,
+        request_attempts=1,
+        http_status=200,
+        actual_model="hy3-preview",
+    )
+
+    report = await ReplayLabService(provider).analyze(task)
+
+    assert report.metadata.requested_model == "hy3"
+    assert report.metadata.actual_model == "hy3-preview"
+    assert report.metadata.http_status == 200

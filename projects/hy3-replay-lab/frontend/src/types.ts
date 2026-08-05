@@ -120,7 +120,10 @@ export type ReplayReport = {
   metadata: {
     provider: string;
     model: string;
+    requested_model?: string;
+    actual_model?: string | null;
     mode: "fake" | "live";
+    http_status?: number | null;
     latency_ms: number | null;
     prompt_tokens: number | null;
     completion_tokens: number | null;

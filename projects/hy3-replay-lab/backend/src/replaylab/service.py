@@ -49,7 +49,10 @@ class ReplayLabService:
             metadata=AnalysisMetadata(
                 provider=self._provider.name,
                 model=self._provider.model,
+                requested_model=self._provider.model,
+                actual_model=getattr(metrics, "actual_model", None),
                 mode=self._provider.mode,
+                http_status=getattr(metrics, "http_status", None),
                 latency_ms=getattr(metrics, "latency_ms", None),
                 prompt_tokens=getattr(metrics, "prompt_tokens", None),
                 completion_tokens=getattr(metrics, "completion_tokens", None),

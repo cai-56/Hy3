@@ -84,19 +84,20 @@ class EvaluationCaseScore(EvalModel):
     replay_precision: float
     replay_recall: float
     validation_gate_coverage: float
-    dangerous_suggestion: bool
+    dangerous_suggestion: bool | None
     error_code: str | None
 
 
 class EvaluationMetrics(EvalModel):
     case_count: int
+    accepted_case_count: int
     first_divergence_accuracy: float
     constraint_preservation_rate: float
     citation_validity_rate: float
     minimal_replay_precision: float
     minimal_replay_recall: float
     validation_gate_coverage_rate: float
-    dangerous_suggestion_rate: float
+    dangerous_suggestion_rate: float | None
     structured_success_rate: float
     total_tokens: int
     mean_tokens: float
@@ -306,19 +307,27 @@ def evaluate_suite(
 
     annotations = {item.case_id: item for item in suite.annotations}
     scores: list[EvaluationCaseScore] = []
-    totals: list[int] = []
-    latencies: list[int] = []
+    accepted_totals: list[int] = []
+    accepted_latencies: list[int] = []
     for scenario in suite.scenarios:
         annotation = annotations[scenario.case_id]
         outcome = outcome_by_id[scenario.case_id]
         score = _score_case(scenario, annotation, outcome)
         scores.append(score)
-        totals.append(outcome.total_tokens)
-        latencies.append(outcome.latency_ms)
+        if outcome.draft is not None:
+            accepted_totals.append(outcome.total_tokens)
+            accepted_latencies.append(outcome.latency_ms)
 
     count = len(scores)
+    accepted_scores = [item for item in scores if item.structured_success]
+    dangerous_results = [
+        float(item.dangerous_suggestion)
+        for item in accepted_scores
+        if item.dangerous_suggestion is not None
+    ]
     return EvaluationMetrics(
         case_count=count,
+        accepted_case_count=len(accepted_scores),
         first_divergence_accuracy=_mean(
             [float(item.first_divergence_correct) for item in scores]
         ),
@@ -331,16 +340,16 @@ def evaluate_suite(
         validation_gate_coverage_rate=_mean(
             [item.validation_gate_coverage for item in scores]
         ),
-        dangerous_suggestion_rate=_mean(
-            [float(item.dangerous_suggestion) for item in scores]
+        dangerous_suggestion_rate=(
+            _mean(dangerous_results) if dangerous_results else None
         ),
         structured_success_rate=_mean(
             [float(item.structured_success) for item in scores]
         ),
-        total_tokens=sum(totals),
-        mean_tokens=_mean([float(item) for item in totals]),
-        mean_latency_ms=_mean([float(item) for item in latencies]),
-        p95_latency_ms=_percentile_95(latencies),
+        total_tokens=sum(accepted_totals),
+        mean_tokens=_mean([float(item) for item in accepted_totals]),
+        mean_latency_ms=_mean([float(item) for item in accepted_latencies]),
+        p95_latency_ms=_percentile_95(accepted_latencies),
         case_scores=scores,
     )
 
@@ -355,6 +364,7 @@ def render_evaluation_markdown(
         f"- Mode: `{mode}`",
         f"- Model: `{model}`",
         f"- Cases: {metrics.case_count}",
+        f"- Accepted structured reports: {metrics.accepted_case_count}",
         "- Truth source: Human-authored annotations are the truth source; "
         "model output never grades itself.",
         "",
@@ -368,17 +378,23 @@ def render_evaluation_markdown(
         f"| Minimal replay precision | {_percent(metrics.minimal_replay_precision)} |",
         f"| Minimal replay recall | {_percent(metrics.minimal_replay_recall)} |",
         f"| Validation-gate coverage | {_percent(metrics.validation_gate_coverage_rate)} |",
-        f"| Dangerous suggestion rate | {_percent(metrics.dangerous_suggestion_rate)} |",
+        "| Dangerous suggestion rate | "
+        + (
+            _percent(metrics.dangerous_suggestion_rate)
+            if metrics.dangerous_suggestion_rate is not None
+            else "not reportable"
+        )
+        + " |",
         f"| Structured success rate | {_percent(metrics.structured_success_rate)} |",
         f"| Total tokens | {metrics.total_tokens} |",
-        f"| Mean tokens / case | {metrics.mean_tokens:.1f} |",
-        f"| Mean latency | {metrics.mean_latency_ms:.1f} ms |",
-        f"| p95 latency | {metrics.p95_latency_ms} ms |",
+        f"| Mean tokens / accepted report | {metrics.mean_tokens:.1f} |",
+        f"| Mean latency / accepted report | {metrics.mean_latency_ms:.1f} ms |",
+        f"| p95 accepted-report latency | {metrics.p95_latency_ms} ms |",
         "",
         "## Per-case checks",
         "",
-        "| Case | Structured | First step | Replay P/R | Gates | Dangerous |",
-        "| --- | --- | --- | ---: | ---: | --- |",
+        "| Case | Structured | First step | Replay P/R | Gates | Dangerous | Failure class |",
+        "| --- | --- | --- | ---: | ---: | --- | --- |",
     ]
     for score in metrics.case_scores:
         lines.append(
@@ -390,7 +406,14 @@ def render_evaluation_markdown(
                     "pass" if score.first_divergence_correct else "fail",
                     f"{score.replay_precision:.2f} / {score.replay_recall:.2f}",
                     f"{score.validation_gate_coverage:.2f}",
-                    "yes" if score.dangerous_suggestion else "no",
+                    (
+                        "unknown"
+                        if score.dangerous_suggestion is None
+                        else "yes"
+                        if score.dangerous_suggestion
+                        else "no"
+                    ),
+                    f"`{score.error_code}`" if score.error_code else "-",
                 ]
             )
             + " |"
@@ -399,8 +422,11 @@ def render_evaluation_markdown(
         "The offline golden-contract mode verifies schemas and metric plumbing; "
         "it is not a model-quality claim."
         if mode == "offline-golden-contract"
-        else "The live run applies fixed per-case ceilings; bounded failures remain failures "
-        "and are not replaced with model-authored grades."
+        else "The live run allows one HTTP attempt per completion and at most one controlled "
+        "repair per case; bounded failures remain failures. Provider, timeout, and "
+        "structured-output failures stay distinct and are not replaced with model-authored "
+        "grades. Token and latency aggregates include accepted structured reports only; "
+        "failed-response usage is not retained."
     )
     lines.extend(["", footer, ""])
     return "\n".join(lines)
@@ -422,7 +448,7 @@ def _score_case(
             replay_precision=0,
             replay_recall=0,
             validation_gate_coverage=0,
-            dangerous_suggestion=False,
+            dangerous_suggestion=None,
             error_code=outcome.error_code or "missing_structured_output",
         )
 

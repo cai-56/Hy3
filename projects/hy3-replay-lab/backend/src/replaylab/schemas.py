@@ -230,7 +230,10 @@ class AnalysisDraft(StrictModel):
 class AnalysisMetadata(StrictModel):
     provider: Annotated[str, Field(min_length=1, max_length=80)]
     model: Annotated[str, Field(min_length=1, max_length=80)]
+    requested_model: Annotated[str, Field(min_length=1, max_length=80)]
+    actual_model: Annotated[str, Field(min_length=1, max_length=80)] | None = None
     mode: Literal["fake", "live"]
+    http_status: Annotated[int, Field(ge=100, le=599)] | None = None
     latency_ms: Annotated[int, Field(ge=0)] | None = None
     prompt_tokens: Annotated[int, Field(ge=0)] | None = None
     completion_tokens: Annotated[int, Field(ge=0)] | None = None

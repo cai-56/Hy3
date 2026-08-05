@@ -4,11 +4,17 @@ import argparse
 import asyncio
 import json
 from datetime import UTC, datetime
+from importlib.metadata import version
 from pathlib import Path
 from typing import Any
 
 from replaylab.builtins import FixtureStore
-from replaylab.hy3 import Hy3Provider, Hy3ProviderError, Hy3Settings
+from replaylab.hy3 import (
+    SAFE_MODEL_PATTERN,
+    Hy3Provider,
+    Hy3ProviderError,
+    Hy3Settings,
+)
 from replaylab.resources import default_result_root, fixture_root
 from replaylab.schemas import ReplayReport
 from replaylab.service import ProviderOutputError, ReplayLabService
@@ -30,15 +36,27 @@ def main() -> None:
     results = asyncio.run(_run_fixtures(fixtures, settings))
     destination = arguments.output_dir or default_result_root()
     destination.mkdir(parents=True, exist_ok=True)
-    stem = f"live-fixtures-{run_time.date().isoformat()}"
+    stem = f"live-fixtures-{run_time.strftime('%Y-%m-%dT%H%M%SZ')}"
+    actual_models = sorted(
+        {
+            str(item["actual_model"])
+            for item in results
+            if item["actual_model"] is not None
+        }
+    )
     payload = {
         "date": run_time.date().isoformat(),
+        "run_at_utc": run_time.isoformat(),
+        "package_version": version("hy3-replay-lab"),
         "provider": "tencent-tokenhub",
         "model": settings.model,
+        "requested_model": settings.model,
+        "actual_models": actual_models,
         "parameters": {
             "structured_output": "json_schema_strict",
             "temperature": 0,
-            "maximum_attempts_per_call": 3,
+            "maximum_http_attempts_per_completion": 1,
+            "maximum_http_attempts_per_fixture": 2,
             "controlled_repairs": 1,
         },
         "results": results,
@@ -61,7 +79,7 @@ async def _run_fixtures(
 ) -> list[dict[str, Any]]:
     store = FixtureStore(fixtures)
     results: list[dict[str, Any]] = []
-    async with Hy3Provider(settings) as provider:
+    async with Hy3Provider(settings, max_attempts=1) as provider:
         for fixture_id in FIXTURE_IDS:
             annotation = json.loads(
                 (fixtures / fixture_id / "annotation.json").read_text(encoding="utf-8")
@@ -69,6 +87,9 @@ async def _run_fixtures(
             try:
                 report = await ReplayLabService(provider).analyze(store.load_task(fixture_id))
                 result = _score_fixture_report(annotation, report)
+                identity_verified = _provider_identity_is_verified(
+                    report.metadata, settings.model
+                )
                 result.update(
                     {
                         "latency_ms": report.metadata.latency_ms or 0,
@@ -76,27 +97,54 @@ async def _run_fixtures(
                         "completion_tokens": report.metadata.completion_tokens or 0,
                         "total_tokens": report.metadata.total_tokens or 0,
                         "request_attempts": report.metadata.request_attempts or 0,
-                        "error_code": None,
+                        "requested_model": report.metadata.requested_model,
+                        "actual_model": report.metadata.actual_model,
+                        "http_status": report.metadata.http_status,
+                        "provider_identity_verified": identity_verified,
+                        "error_code": (
+                            None if identity_verified else "provider_identity_unverified"
+                        ),
                     }
                 )
+                result["passed"] = bool(result["passed"] and identity_verified)
                 results.append(result)
-            except Hy3ProviderError:
+            except Hy3ProviderError as error:
+                metrics = provider.last_metrics
                 results.append(
                     _failed_result(
                         fixture_id,
                         annotation["first_divergence_step_id"],
                         "provider_request_failed",
+                        requested_model=settings.model,
+                        actual_model=metrics.actual_model,
+                        http_status=error.status_code or metrics.http_status,
+                        metrics=metrics,
                     )
                 )
             except (ProviderOutputError, OutputValidationError):
+                metrics = provider.last_metrics
                 results.append(
                     _failed_result(
                         fixture_id,
                         annotation["first_divergence_step_id"],
                         "structured_output_rejected",
+                        requested_model=settings.model,
+                        actual_model=metrics.actual_model,
+                        http_status=metrics.http_status,
+                        metrics=metrics,
                     )
                 )
     return results
+
+
+def _provider_identity_is_verified(metadata: Any, configured_model: str) -> bool:
+    actual_model = getattr(metadata, "actual_model", None)
+    return bool(
+        getattr(metadata, "requested_model", None) == configured_model
+        and isinstance(actual_model, str)
+        and SAFE_MODEL_PATTERN.fullmatch(actual_model)
+        and getattr(metadata, "http_status", None) == 200
+    )
 
 
 def _score_fixture_report(
@@ -178,7 +226,14 @@ def _set_recall(predicted: set[str], expected: set[str]) -> float:
 
 
 def _failed_result(
-    fixture_id: str, expected_first_divergence_step_id: str, error_code: str
+    fixture_id: str,
+    expected_first_divergence_step_id: str,
+    error_code: str,
+    *,
+    requested_model: str,
+    actual_model: str | None,
+    http_status: int | None,
+    metrics: Any,
 ) -> dict[str, Any]:
     return {
         "fixture_id": fixture_id,
@@ -192,12 +247,16 @@ def _failed_result(
         "replay_precision": 0,
         "replay_recall": 0,
         "validation_gate_coverage": 0,
-        "dangerous_suggestion": False,
-        "latency_ms": 0,
-        "prompt_tokens": 0,
-        "completion_tokens": 0,
-        "total_tokens": 0,
-        "request_attempts": 0,
+        "dangerous_suggestion": None,
+        "latency_ms": metrics.latency_ms,
+        "prompt_tokens": metrics.prompt_tokens,
+        "completion_tokens": metrics.completion_tokens,
+        "total_tokens": metrics.total_tokens,
+        "request_attempts": metrics.request_attempts,
+        "requested_model": requested_model,
+        "actual_model": actual_model,
+        "http_status": http_status,
+        "provider_identity_verified": False,
         "error_code": error_code,
     }
 
@@ -207,27 +266,39 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "# Live Hy3 fixture gate",
         "",
         f"- Date: {payload['date']}",
+        f"- Package: `{payload['package_version']}`",
         f"- Provider: `{payload['provider']}`",
-        f"- Model: `{payload['model']}`",
+        f"- Requested model: `{payload['requested_model']}`",
+        "- HTTP budget: one attempt per completion, with at most one controlled repair",
         "- Input: the two public synthetic built-in fixtures",
         "- Validation: strict schema, reference closure, deterministic replay rules, "
         "and human annotations",
         "",
-        "| Fixture | Gate | First step | Criteria | Evidence | Replay P/R | "
-        "Gates | Unsafe | Latency | Tokens | Attempts | Error |",
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | "
-        "---: | --- |",
+        "| Fixture | Gate | First step | Requested → actual | HTTP | Criteria | Evidence | "
+        "Replay P/R | Gates | Unsafe | Latency | Tokens | Attempts | Error |",
+        "| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: | "
+        "---: | ---: | --- |",
     ]
     for item in payload["results"]:
         first_step = item["actual_first_divergence_step_id"] or "-"
+        actual_model = item["actual_model"] or "-"
+        http_status = item["http_status"] or "-"
         error = item["error_code"] or "-"
+        unsafe = (
+            "unknown"
+            if item["dangerous_suggestion"] is None
+            else "yes"
+            if item["dangerous_suggestion"]
+            else "no"
+        )
         lines.append(
             f"| `{item['fixture_id']}` | {'pass' if item['passed'] else 'fail'} | "
-            f"`{first_step}` | {item['constraint_preservation']:.2f} | "
+            f"`{first_step}` | `{item['requested_model']}` → `{actual_model}` | "
+            f"{http_status} | {item['constraint_preservation']:.2f} | "
             f"{item['required_evidence_coverage']:.2f} | "
             f"{item['replay_precision']:.2f}/{item['replay_recall']:.2f} | "
             f"{item['validation_gate_coverage']:.2f} | "
-            f"{'yes' if item['dangerous_suggestion'] else 'no'} | "
+            f"{unsafe} | "
             f"{item['latency_ms']} ms | {item['total_tokens']} | "
             f"{item['request_attempts']} | `{error}` |"
         )

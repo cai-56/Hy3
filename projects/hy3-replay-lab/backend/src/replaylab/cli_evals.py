@@ -49,7 +49,7 @@ def main() -> None:
     metrics = evaluate_suite(suite, outcomes)
     destination = arguments.output_dir or default_result_root()
     destination.mkdir(parents=True, exist_ok=True)
-    stem = f"{arguments.mode}-{run_time.date().isoformat()}"
+    stem = f"{arguments.mode}-{run_time.strftime('%Y-%m-%dT%H%M%SZ')}"
     json_path = destination / f"{stem}.json"
     markdown_path = destination / f"{stem}.md"
     json_path.write_text(metrics.model_dump_json(indent=2) + "\n", encoding="utf-8")
@@ -86,7 +86,9 @@ async def _live_outcomes(
     async def run_case(scenario: EvaluationScenario) -> EvaluationOutcome:
         async with semaphore:
             try:
-                async with asyncio.timeout(90), Hy3Provider(settings) as provider:
+                async with asyncio.timeout(90), Hy3Provider(
+                    settings, max_attempts=1
+                ) as provider:
                     report = await ReplayLabService(provider).analyze(
                         build_task(scenario)
                     )

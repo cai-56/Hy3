@@ -4,8 +4,10 @@ from pathlib import Path
 
 import httpx
 import pytest
+from pydantic import ValidationError
 
-from replaylab.hy3 import Hy3Provider, Hy3ProviderError, Hy3Settings
+from replaylab import hy3 as hy3_module
+from replaylab.hy3 import Hy3Provider, Hy3ProviderError, Hy3ProviderMetrics, Hy3Settings
 from replaylab.schemas import TaskSpec
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -38,11 +40,17 @@ def assert_provider_compatible_schema(node: object) -> None:
         assert_provider_compatible_schema(value)
 
 
-def success_response(*, prompt_tokens: int = 100, completion_tokens: int = 40) -> httpx.Response:
+def success_response(
+    *,
+    prompt_tokens: int = 100,
+    completion_tokens: int = 40,
+    model: str = "hy3-preview",
+) -> httpx.Response:
     output = load_json("fixtures/coding-loop/provider-output.json")
     return httpx.Response(
         200,
         json={
+            "model": model,
             "choices": [{"message": {"content": json.dumps(output)}}],
             "usage": {
                 "prompt_tokens": prompt_tokens,
@@ -63,6 +71,15 @@ def test_invalid_environment_configuration_does_not_leak_credentials(monkeypatch
 
     assert str(caught.value) == "Hy3 provider configuration is invalid"
     assert secret not in str(caught.value)
+
+
+def test_requested_model_rejects_unsafe_evidence_labels() -> None:
+    with pytest.raises(ValidationError, match="model"):
+        Hy3Settings(
+            api_key="unit-test-key",
+            base_url="https://hy3.test/v1",
+            model="hy3-preview\nforged-evidence-row",
+        )
 
 
 @pytest.mark.asyncio
@@ -114,6 +131,24 @@ async def test_hy3_uses_openai_compatible_structured_output_without_leaking_the_
     assert provider.last_metrics.completion_tokens == 40
     assert provider.last_metrics.total_tokens == 140
     assert provider.last_metrics.request_attempts == 1
+    assert provider.last_metrics.http_status == 200
+    assert provider.last_metrics.actual_model == "hy3-preview"
+
+
+@pytest.mark.asyncio
+async def test_hy3_discards_an_unsafe_response_model_label() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        del request
+        return success_response(model="hy3-preview\n| injected |")
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        provider = Hy3Provider(
+            Hy3Settings(api_key="unit-test-key", base_url="https://hy3.test/v1"),
+            client=client,
+        )
+        await provider.analyze(task())
+
+    assert provider.last_metrics.actual_model is None
 
 
 @pytest.mark.asyncio
@@ -240,6 +275,61 @@ async def test_hy3_retries_network_timeouts_but_not_cancellation() -> None:
             await provider.analyze(task())
 
     assert cancel_calls == 1
+
+
+@pytest.mark.asyncio
+async def test_transport_failure_records_elapsed_time_after_the_failed_request(
+    monkeypatch,
+) -> None:
+    elapsed = iter((0, 1500))
+    monkeypatch.setattr(hy3_module, "_elapsed_ms", lambda started: next(elapsed))
+
+    def timeout_handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("private endpoint details", request=request)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(timeout_handler)) as client:
+        provider = Hy3Provider(
+            Hy3Settings(api_key="test-key", base_url="https://hy3.test/v1"),
+            client=client,
+            max_attempts=1,
+        )
+        with pytest.raises(Hy3ProviderError, match="failed after retries"):
+            await provider.analyze(task())
+
+    assert provider.last_metrics.latency_ms == 1500
+    assert provider.last_metrics.request_attempts == 1
+
+
+@pytest.mark.asyncio
+async def test_failed_repair_keeps_the_initial_completion_metrics() -> None:
+    def unavailable_handler(request: httpx.Request) -> httpx.Response:
+        del request
+        return httpx.Response(503)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(unavailable_handler)) as client:
+        provider = Hy3Provider(
+            Hy3Settings(api_key="test-key", base_url="https://hy3.test/v1"),
+            client=client,
+            max_attempts=1,
+        )
+        provider.last_metrics = Hy3ProviderMetrics(
+            latency_ms=100,
+            prompt_tokens=20,
+            completion_tokens=10,
+            total_tokens=30,
+            request_attempts=1,
+            http_status=200,
+            actual_model="hy3-preview",
+        )
+
+        with pytest.raises(Hy3ProviderError, match="status 503"):
+            await provider.repair(task(), {"invalid": True}, "invalid_json_or_schema")
+
+    assert provider.last_metrics.latency_ms >= 100
+    assert provider.last_metrics.total_tokens == 30
+    assert provider.last_metrics.request_attempts == 2
+    assert provider.last_metrics.http_status == 503
+    assert provider.last_metrics.actual_model == "hy3-preview"
 
 
 @pytest.mark.asyncio

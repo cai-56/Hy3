@@ -48,6 +48,7 @@ Repository hygiene checks scan tracked deliverables for credential patterns and 
 - HTTP request timeout: 60 seconds.
 - Provider output: 256,000 bytes maximum.
 - Attempts: at most three by default; a cancellation received by the provider coroutine is never retried.
+- Evidence CLI budget: one HTTP attempt per completion and at most one controlled repair per fixture/case.
 - Retry set: transport failures and HTTP 429/502/503/504 only.
 - `Retry-After`: accepted as bounded seconds from 0 through 30; otherwise bounded exponential backoff is used.
 - HTTP 400/401/403 and other permanent statuses fail immediately.
@@ -62,6 +63,6 @@ The browser's stop-wait control aborts its own response handling. It does not pr
 - Redaction is defense in depth, not a universal data-loss-prevention engine. Do not import secrets or private traces unless their disclosure to the configured provider is authorized.
 - Evidence closure proves that a citation exists in the imported bundle, not that its real-world content is true.
 - Hy3 explanations remain probabilistic. Deterministic invariants constrain structure and provenance but cannot guarantee causal correctness.
-- Live and offline UI recordings are stored separately with visible mode labels. The earlier bounded `hy3` allocation failure, current 2/2 `hy3-preview` fixture gate, and live browser evidence are all retained without relabeling results.
+- Live GIF, continuous WebM, and offline GIF evidence are stored with separate provenance. The earlier bounded `hy3` allocation failure, current 2/2 `hy3-preview` fixture gate, current 10/12 public-suite run, and live browser evidence are all retained without relabeling results.
 
 Security regression coverage is listed in [verification.md](verification.md), and the execution boundary is illustrated in [architecture.md](architecture.md).

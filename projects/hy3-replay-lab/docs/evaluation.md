@@ -35,11 +35,11 @@ All metrics are computed by [`evaluation.py`](../backend/src/replaylab/evaluatio
 | Minimal replay precision | Expected rerun steps divided by all proposed rerun steps |
 | Minimal replay recall | Proposed expected rerun steps divided by all expected rerun steps |
 | Validation-gate coverage | Required gates represented with their criterion/evidence references |
-| Dangerous suggestion rate | Fraction of cases containing the annotated prohibited destructive suggestion |
+| Dangerous suggestion rate | Among accepted reports, literal hit rate for bilingual human-annotated prohibited phrases; failed reports are unknown, and this is not a semantic safety proof |
 | Structured success rate | Fraction producing a draft that passes schema and deterministic validation |
-| Efficiency | Total/mean tokens, mean latency, and p95 latency from provider metadata |
+| Efficiency | Total/mean tokens, mean latency, and p95 latency across accepted reports with retained provider metadata |
 
-Failed, timed-out, or structurally rejected cases remain zero-valued failures. They are not removed from denominators or replaced with golden drafts.
+Failed, timed-out, or structurally rejected cases remain zero-valued failures for the quality and structured-success metrics. They are not replaced with golden drafts. Safety is marked unknown for those rows, while Token and latency summaries use accepted reports because failed-response usage is not retained.
 
 ## Reproduce
 
@@ -64,7 +64,15 @@ For the optional broad live batch:
 uv run replaylab-eval --mode live-hy3
 ```
 
-Both live commands use `temperature=0`, strict JSON Schema output, a 60-second provider request timeout, at most three attempts per call, and at most one controlled repair. The two-fixture command runs sequentially. Only the optional 12-case batch uses concurrency two and a 90-second per-case outer ceiling. Use `--output-dir <directory>` when preserving an earlier same-day result; the default filename is date-based. The fixture command passes only when every full-annotation metric is 1.0 and no dangerous suggestion is present.
+Both live evidence commands use `temperature=0`, strict JSON Schema output, a 60-second provider request timeout, one HTTP attempt per completion, and at most one controlled repair. The two-fixture command runs sequentially. Only the optional 12-case batch uses concurrency two and a 90-second per-case outer ceiling. Output filenames include a UTC timestamp; use `--output-dir <directory>` to keep related runs together. The fixture command passes only when every full-annotation metric is 1.0 and no dangerous suggestion is present. Interactive product calls retain the separate default of at most three attempts for transient network and 429/502/503/504 failures.
+
+## Recorded results: 2026-08-05
+
+The [timestamped fixture report](../evals/results/stage1-2026-08-05/live-fixtures/live-fixtures-2026-08-05T020537Z.md) records package `0.1.0`, requested/actual model `hy3-preview`, and HTTP 200 for both public fixtures. Both passed the complete human annotation: exact first divergence, criteria, required finding evidence, replay precision/recall, required gates, and no dangerous suggestion. This 2/2 result is a fixture gate, not a general model-accuracy claim.
+
+The [timestamped 12-case report](../evals/results/stage1-2026-08-05/broad/live-hy3-2026-08-05T020713Z.md) contains 10 accepted reports. Structured success and first-divergence accuracy were 83.3%, and citation validity was 80.6%. The two failures were `structured_output_rejected`; provider, quota, and timeout failures were zero. Accepted-report means were 3,088.4 tokens and 16,866.3 ms. The original runner used English-only dangerous phrases even though provider output was required in Chinese, and it did not retain accepted drafts; its 0% figure is therefore withdrawn. The public annotations now include Chinese counterparts for future runs. These numbers apply only to the public synthetic suite.
+
+The [continuous UI record](../evals/results/stage1-2026-08-05/live-ui/continuous-live-demo-2026-08-05.md) verifies a 52.160-second live WebM. It shows a verified research result, then records the coding case from click through wait state and accepted result. Both downloaded reports asserted `mode=live`, requested/actual `hy3-preview`, HTTP 200, and the annotated divergence IDs.
 
 ## Recorded results: 2026-07-22
 
@@ -72,9 +80,9 @@ Both live commands use `temperature=0`, strict JSON Schema output, a 60-second p
 
 The [offline JSON](../evals/results/offline-golden-contract-2026-07-22.json) and [Markdown report](../evals/results/offline-golden-contract-2026-07-22.md) contain 12/12 structured outcomes and 100% contract metrics. This is the expected golden-contract result and is explicitly labeled as such.
 
-### Current full-annotation Hy3 Preview gate
+### Retained full-annotation Hy3 Preview gate
 
-The current [fixture JSON](../evals/results/live-fixtures-hy3-preview-2026-07-22.json) and [Markdown report](../evals/results/live-fixtures-hy3-preview-2026-07-22.md) record real TokenHub `hy3-preview` calls after provider-schema compatibility and bounded repair hints were tightened:
+The retained [fixture JSON](../evals/results/live-fixtures-hy3-preview-2026-07-22.json) and [Markdown report](../evals/results/live-fixtures-hy3-preview-2026-07-22.md) record real TokenHub `hy3-preview` calls after provider-schema compatibility and bounded repair hints were tightened:
 
 | Fixture | Gate | First divergence | Criteria | Evidence | Replay P/R | Gates | Unsafe | Latency | Tokens | Calls |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | ---: | ---: |
@@ -83,7 +91,7 @@ The current [fixture JSON](../evals/results/live-fixtures-hy3-preview-2026-07-22
 
 Both fixtures passed every full-annotation condition. The second call for each row was the single controlled repair, guided only by a bounded deterministic failure category; neither human annotations nor expected answers were sent to the provider.
 
-### Current live UI gate
+### Retained live UI gate
 
 The [live UI record](../evals/results/live-ui-demo-2026-07-22.md) covers the same two public fixtures through the running React/FastAPI application. Playwright selected `在线 Hy3`, confirmed live metadata and both annotated divergence IDs, opened the required evidence, and downloaded JSON and Markdown. The two analysis requests completed in 64,719 ms combined, below the two-minute gate, and produced the [12-second live UI GIF](demo/replaylab-live-demo.gif).
 
@@ -109,7 +117,7 @@ The earlier [UI smoke record](../evals/results/live-ui-smoke-2026-07-22.md) rema
 ## Interpretation rules
 
 - Use the historical v1 run only as evidence that both fixtures once completed with the annotated first divergence; it is not current availability or a full-annotation result.
-- Release readiness requires the current 2/2 full-annotation result and the recorded live UI flow; both are documented above.
+- Release readiness requires a current 2/2 full-annotation result and a recorded live UI flow; the 2026-08-05 evidence above satisfies both boundaries.
 - Use the offline suite to detect schema/metric regressions, not to claim model accuracy.
-- Treat the broad live batch as failed/incomplete comparative-benchmark evidence; it is not substituted for the required two-fixture gate.
+- Treat every broad live batch as public-suite evidence, not a general or comparative model benchmark. It does not replace the required two-fixture gate.
 - Never infer success from an explanation alone; acceptance requires schema, references, replay invariants, and the annotation comparison.
